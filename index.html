@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shivprasad_Suryakar / Git-Ops-Arena — Git Ops Arena</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    },
+                    animation: {
+                        'shake': 'shake 0.42s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.97) translateY(6px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* GitHub-inspired Light & Dark Theme Tokens */
+        :root {
+            --gh-bg: #ffffff;
+            --gh-canvas: #f6f8fa;
+            --gh-surface: #ffffff;
+            --gh-surface-subtle: #f6f8fa;
+            --gh-surface-hover: #eff2f5;
+            --gh-border: #d0d7de;
+            --gh-border-muted: #d8dee4;
+            --gh-text: #1f2328;
+            --gh-text-muted: #59636e;
+            --gh-accent: #0969da;
+            --gh-accent-bg: #ddf4ff;
+            --gh-success: #1a7f37;
+            --gh-success-bg: #dafbe1;
+            --gh-danger: #cf222e;
+            --gh-danger-bg: #ffebe9;
+            --gh-warn: #9a6700;
+            --gh-warn-bg: #fff8c5;
+            --gh-done: #8250df;
+            --gh-done-bg: #fbefff;
+        }
+
+        html.dark {
+            --gh-bg: #0d1117;
+            --gh-canvas: #010409;
+            --gh-surface: #161b22;
+            --gh-surface-subtle: #0d1117;
+            --gh-surface-hover: #21262d;
+            --gh-border: #30363d;
+            --gh-border-muted: #21262d;
+            --gh-text: #e6edf3;
+            --gh-text-muted: #8b949e;
+            --gh-accent: #2f81f7;
+            --gh-accent-bg: rgba(56, 139, 253, 0.15);
+            --gh-success: #3fb950;
+            --gh-success-bg: rgba(46, 160, 67, 0.15);
+            --gh-danger: #f85149;
+            --gh-danger-bg: rgba(248, 81, 73, 0.15);
+            --gh-warn: #d29922;
+            --gh-warn-bg: rgba(187, 128, 9, 0.15);
+            --gh-done: #a371f7;
+            --gh-done-bg: rgba(163, 113, 247, 0.15);
+        }
+
+        body {
+            background-color: var(--gh-bg);
+            color: var(--gh-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .gh-box {
+            background-color: var(--gh-surface);
+            border: 1px solid var(--gh-border);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .gh-subtle {
+            background-color: var(--gh-surface-subtle);
+            border-color: var(--gh-border);
+        }
+
+        .gh-muted {
+            color: var(--gh-text-muted);
+        }
+
+        .gh-divider {
+            border-color: var(--gh-border);
+        }
+
+        .lane-track {
+            background-color: var(--gh-surface-subtle);
+            border: 1px solid var(--gh-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lane-pulse {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 96px;
+            background: linear-gradient(90deg, transparent, rgba(47, 129, 247, 0.24), transparent);
+            animation: laneRush 2.5s linear infinite;
+        }
+
+        @keyframes laneRush {
+            0% { left: -100px; }
+            100% { left: 100%; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gh-surface-subtle);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gh-border);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- GITHUB-STYLE TOP REPOSITORY HEADER & UNDERLINE TABS (ONLY ARENA & QUESTION BANK) -->
+    <header class="gh-subtle border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-3.5">
+            <!-- Repository Breadcrumb Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <!-- Git Branch / Repo Icon -->
+                    <svg class="w-4 h-4 gh-muted shrink-0" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+                    </svg>
+                    <span class="text-base sm:text-lg font-semibold text-[#0969da] dark:text-[#58a6ff]">
+                        Shivprasad_Suryakar
+                    </span>
+                    <span class="gh-muted font-mono">/</span>
+                    <span class="text-base sm:text-lg font-bold tracking-tight cursor-pointer" onclick="switchTab('arena')">
+                        Git-Ops-Arena
+                    </span>
+                    <span class="px-2 py-0.5 text-xs font-medium rounded-full border gh-divider gh-muted">
+                        Public
+                    </span>
+                    <span class="px-2 py-0.5 text-xs font-mono rounded-full gh-subtle border gh-divider gh-muted">
+                        🌿 main
+                    </span>
+                    <span class="hidden sm:inline-flex px-2 py-0.5 text-xs font-mono rounded-full bg-[#ddf4ff] dark:bg-[#388bfd]/15 text-[#0969da] dark:text-[#58a6ff] border border-[#54aeff]/40">
+                        420 Git Qs
+                    </span>
+                </div>
+
+                <!-- Right Utility Buttons: Theme Toggle, Sound, Reset -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-theme" onclick="toggleTheme()" class="gh-box px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 cursor-pointer" title="Switch Light / Dark Theme">
+                        <span id="theme-icon">☀️</span>
+                        <span id="theme-label">Light Mode</span>
+                    </button>
+                    <button id="btn-sound" onclick="toggleSound()" class="gh-box px-2.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1 hover:opacity-90 cursor-pointer" title="Toggle Web Audio Sound FX">
+                        <span id="sound-icon">🔊</span>
+                        <span class="hidden md:inline font-mono">SFX</span>
+                    </button>
+                    <button onclick="confirmResetProgress()" class="gh-box px-2.5 py-1.5 rounded-md text-xs font-mono font-semibold text-[#cf222e] dark:text-[#f85149] hover:opacity-90 cursor-pointer" title="Reset Local Progress & Locks">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compact Telemetry Strip -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 text-xs font-mono gh-muted">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span>BEST: <strong id="strip-high-score" class="text-[#0969da] dark:text-[#58a6ff]">0</strong></span>
+                    <span>MASTERED: <strong id="strip-mastered" class="text-[#1a7f37] dark:text-[#3fb950]">0/420</strong></span>
+                    <span>TOP STREAK: <strong id="strip-best-streak" class="text-[#8250df] dark:text-[#a371f7]">0x</strong></span>
+                    <span>ACCURACY: <strong id="strip-accuracy" class="text-[#9a6700] dark:text-[#d29922]">0%</strong></span>
+                </div>
+                <span id="unlock-rule-hint" class="text-[11px] gh-muted">
+                    🔒 Complete Basic to unlock Intermediate • Complete Intermediate to unlock Advanced
+                </span>
+            </div>
+
+            <!-- GitHub-Style Underline Navigation Tabs (Strictly Arena Run & Question Bank) -->
+            <nav class="flex items-center gap-2 -mb-px">
+                <button id="tab-arena" onclick="switchTab('arena')" class="repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent gh-muted hover:opacity-90 flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <span>⚡</span>
+                    <span>Arena Run</span>
+                    <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-full bg-[#dafbe1] dark:bg-[#2ea043]/20 text-[#1a7f37] dark:text-[#3fb950]">Live</span>
+                </button>
+                <button id="tab-bank" onclick="switchTab('bank')" class="repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent gh-muted hover:opacity-90 flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <span>📚</span>
+                    <span>Question Bank</span>
+                    <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-full gh-subtle border gh-divider">420</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- Shared Topic & Strict Sequential Level Gate Bar -->
+        <section class="gh-box rounded-xl p-4 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div class="space-y-0.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#0969da] dark:text-[#58a6ff]">
+                            Git Domain &amp; Sequential Tier Gate
+                        </span>
+                        <span class="text-xs gh-muted font-mono">• 20 Qs / Tier • 60 / Topic • 420 Total</span>
+                    </div>
+                    <p id="level-gate-status" class="text-xs font-mono gh-muted">
+                        Basic is unlocked. Master all 20 Basic questions in this topic to unlock Intermediate.
+                    </p>
+                </div>
+
+                <!-- Difficulty Level Segmented Control with Lock States -->
+                <div class="inline-flex items-center flex-wrap gap-1 p-1 rounded-lg gh-subtle border gh-divider self-start lg:self-auto">
+                    <button id="lvl-btn-basic" data-level="basic" onclick="selectLevel('basic')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span id="lvl-icon-basic">🟢</span>
+                        <span>Basic</span>
+                        <span id="lvl-prog-basic" class="text-[11px] opacity-80">0/20</span>
+                    </button>
+                    <button id="lvl-btn-intermediate" data-level="intermediate" onclick="selectLevel('intermediate')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5">
+                        <span id="lvl-icon-intermediate">🔒</span>
+                        <span>Intermediate</span>
+                        <span id="lvl-prog-intermediate" class="text-[11px] opacity-80">0/20</span>
+                    </button>
+                    <button id="lvl-btn-advanced" data-level="advanced" onclick="selectLevel('advanced')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition flex items-center gap-1.5">
+                        <span id="lvl-icon-advanced">🔒</span>
+                        <span>Advanced</span>
+                        <span id="lvl-prog-advanced" class="text-[11px] opacity-80">0/20</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 7 Git Topic Selector Cards -->
+            <div id="topic-pills" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2"></div>
+        </section>
+
+        <!-- TAB 1: ARENA RUN (SPEED-RUN QUIZ GAME) -->
+        <section id="view-arena" class="space-y-5">
+            <!-- Telemetry & Pipeline Rollout Lane Bar -->
+            <div class="gh-box rounded-xl p-4 space-y-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <span id="arena-badge" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#ddf4ff] dark:bg-[#388bfd]/15 text-[#0969da] dark:text-[#58a6ff] border border-[#54aeff]/40">
+                            BASIC • GIT BASICS &amp; OBJECTS
+                        </span>
+                        <span id="arena-q-counter" class="text-xs sm:text-sm font-mono gh-muted">
+                            Question 1 / 20
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-4 font-mono text-xs sm:text-sm">
+                        <div>
+                            <span class="gh-muted">SCORE:</span>
+                            <span id="arena-score" class="font-extrabold text-[#0969da] dark:text-[#58a6ff] text-base ml-1">0</span>
+                        </div>
+                        <div>
+                            <span class="gh-muted">STREAK:</span>
+                            <span id="arena-streak" class="font-extrabold text-[#8250df] dark:text-[#a371f7] text-base ml-1">0x</span>
+                        </div>
+                        <div>
+                            <span class="gh-muted">TIMER:</span>
+                            <span id="arena-timer" class="font-extrabold text-[#9a6700] dark:text-[#d29922] text-base ml-1">24s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repo Integrity Health + Commit Pipeline Runner Track -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div class="md:col-span-4 space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="font-semibold text-[#1a7f37] dark:text-[#3fb950]">REPO INTEGRITY</span>
+                            <span id="arena-health-text" class="font-bold text-[#1a7f37] dark:text-[#3fb950]">100%</span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full gh-subtle border gh-divider overflow-hidden">
+                            <div id="arena-health-bar" class="h-full bg-[#1a7f37] dark:bg-[#3fb950] transition-all duration-300" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-8 lane-track h-10 rounded-lg flex items-center justify-between px-3.5">
+                        <div class="lane-pulse"></div>
+                        <div id="runner-avatar" class="relative z-10 flex items-center gap-2 font-mono text-xs font-bold transition-transform duration-300">
+                            <span class="px-2 py-0.5 rounded bg-[#0969da] dark:bg-[#1f6feb] text-white">
+                                🔀 HEAD-RUNNER
+                            </span>
+                            <span id="runner-status" class="gh-muted hidden sm:inline">Committing changes...</span>
+                        </div>
+                        <div class="relative z-10 font-mono text-xs gh-muted flex items-center gap-1.5">
+                            <span>🏁 MERGE</span>
+                            <span id="rollout-pct" class="font-bold text-[#1a7f37] dark:text-[#3fb950]">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Question Card -->
+            <div id="question-card" class="gh-box rounded-xl p-5 sm:p-7 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span id="q-id-pill" class="px-2.5 py-0.5 rounded-md gh-subtle border gh-divider font-mono text-xs font-bold text-[#0969da] dark:text-[#58a6ff]">
+                            BAS-BAS-01
+                        </span>
+                        <span id="q-tag-pill" class="px-2.5 py-0.5 rounded-md bg-[#fbefff] dark:bg-[#a371f7]/15 text-[#8250df] dark:text-[#a371f7] border border-[#8250df]/30 font-mono text-xs">
+                            Repository Initialization
+                        </span>
+                        <span id="q-mastered-badge" class="hidden px-2 py-0.5 rounded-full text-[11px] font-mono bg-[#dafbe1] dark:bg-[#2ea043]/20 text-[#1a7f37] dark:text-[#3fb950]">
+                            ✓ Mastered
+                        </span>
+                    </div>
+                    <div class="text-xs font-mono gh-muted">
+                        Keys: <span class="font-semibold">[1-4]</span> or <span class="font-semibold">[A-D]</span> • <span class="font-semibold">[Enter]</span> next
+                    </div>
+                </div>
+
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold leading-snug">
+                    Loading Git challenge...
+                </h2>
+
+                <!-- 4 Choices Grid -->
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+                <!-- Explanation & Next Action Box -->
+                <div id="explanation-box" class="hidden rounded-xl p-4 border animate-pop-in space-y-2.5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div id="feedback-title" class="font-mono font-extrabold text-xs sm:text-sm"></div>
+                        <button id="btn-next-q" onclick="nextQuestion()" class="px-4 py-1.5 rounded-lg bg-[#1f883d] hover:bg-[#1a7f37] text-white font-mono text-xs sm:text-sm font-bold cursor-pointer self-start sm:self-auto">
+                            Next Challenge →
+                        </button>
+                    </div>
+                    <p id="explanation-text" class="text-xs sm:text-sm font-mono gh-subtle border rounded-lg p-3 leading-relaxed"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: QUESTION BANK BROWSER (RESPECTS SEQUENTIAL TIER LOCKS) -->
+        <section id="view-bank" class="hidden space-y-4">
+            <div class="gh-box rounded-xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                    <h2 id="bank-heading" class="text-lg font-bold">
+                        Question Bank — Basics &amp; Working Tree (BASIC)
+                    </h2>
+                    <p id="bank-subtext" class="text-xs gh-muted mt-0.5">
+                        Browse questions, correct commands, and explanations for unlocked tiers.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <input
+                        id="bank-search"
+                        type="text"
+                        oninput="renderQuestionBank()"
+                        placeholder="Filter git commands, flags, concepts..."
+                        class="px-3 py-1.5 rounded-lg gh-subtle border gh-divider text-xs sm:text-sm font-mono focus:outline-none focus:border-[#0969da] dark:focus:border-[#58a6ff] w-full sm:w-64"
+                    />
+                    <button onclick="switchTab('arena')" class="px-3.5 py-1.5 rounded-lg bg-[#1f883d] hover:bg-[#1a7f37] text-white font-mono text-xs font-bold cursor-pointer">
+                        Run Speed-Quiz ⚡
+                    </button>
+                </div>
+            </div>
+            <div id="bank-list" class="space-y-3"></div>
+        </section>
+    </main>
+
+    <!-- CUSTOM MODAL DIALOG (NO NATIVE ALERT/CONFIRM) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/65 backdrop-blur-xs">
+        <div class="gh-box rounded-2xl max-w-md w-full p-6 space-y-4 animate-pop-in">
+            <div class="flex items-center gap-3">
+                <div id="modal-icon" class="w-11 h-11 rounded-xl gh-subtle border gh-divider flex items-center justify-center text-2xl">🔒</div>
+                <h3 id="modal-title" class="text-lg font-bold">Tier Locked</h3>
+            </div>
+            <p id="modal-message" class="text-sm gh-muted leading-relaxed"></p>
+            <div id="modal-actions" class="flex items-center justify-end gap-2.5 pt-2"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * =====================================================================
+         * GIT OPS ARENA — SINGLE-FILE GIT & VERSION CONTROL QUIZ ENGINE
+         * 7 Git Domains × 3 Sequential Tiers × 20 Questions = 420 Questions
+         * Strict Unlock Rule: Basic -> Intermediate -> Advanced per Topic
+         * =====================================================================
+         */
+
+        const TOPICS = [
+            { id: 'basics', name: 'Basics & Working Tree', short: 'Basics & Index', code: 'BAS', icon: '🌱' },
+            { id: 'branching', name: 'Branching & Switching', short: 'Branching', code: 'BRN', icon: '🌿' },
+            { id: 'merging', name: 'Merging, Rebase & Conflicts', short: 'Merge & Rebase', code: 'MRG', icon: '🔀' },
+            { id: 'history', name: 'History, Diff, Reset & Revert', short: 'History & Reset', code: 'HST', icon: '🕰️' },
+            { id: 'remotes', name: 'Remotes, Fetch, Pull & Push', short: 'Remotes & Sync', code: 'RMT', icon: '📡' },
+            { id: 'stash_tag', name: 'Stash, Cherry-Pick, Tag & Bisect', short: 'Stash & Bisect', code: 'STG', icon: '🏷️' },
+            { id: 'workflows', name: 'Workflows, Hooks & Internals', short: 'Hooks & Objects', code: 'WRK', icon: '⚙️' }
+        ];
+
+        const LEVELS = ['basic', 'intermediate', 'advanced'];
+        const LEVEL_ORDER = { basic: 0, intermediate: 1, advanced: 2 };
+        const QUESTIONS_PER_TIER = 20;
+
+        const SEED_QUESTIONS = {
+            basics: {
+                basic: [
+                    { q: "Which command initializes a new local Git repository in the current directory?", opts: ["git init", "git start", "git new-repo", "git create"], ans: 0, tag: "git init", exp: "`git init` creates a hidden `.git` directory containing repository metadata and object storage." },
+                    { q: "Which command stages modified or untracked files into the Git index (staging area)?", opts: ["git add .", "git stage --all", "git commit -a", "git index --add"], ans: 0, tag: "Staging Area", exp: "`git add` copies snapshots of changes from the working directory into the staging area (index)." },
+                    { q: "Which command records staged changes to the repository history with a message?", opts: ["git commit -m 'feat: init'", "git push -m 'feat: init'", "git save 'feat: init'", "git record 'feat: init'"], ans: 0, tag: "git commit", exp: "`git commit -m '<msg>'` creates a new commit object pointing to the staged tree snapshot." },
+                    { q: "Which command shows untracked, modified, and staged files relative to HEAD?", opts: ["git status", "git state", "git inspect", "git tree"], ans: 0, tag: "Working Tree State", exp: "`git status` displays working tree and staging area differences against `HEAD`." },
+                    { q: "Which file ignores untracked build artifacts or secrets without removing tracked files?", opts: [".gitignore", ".gitexclude", ".gitconfig", ".gitkeep"], ans: 0, tag: "Ignoring Files", exp: "Patterns in `.gitignore` tell Git not to suggest or stage matching untracked files." }
+                ],
+                intermediate: [
+                    { q: "What does `git commit -am 'fix: typo'` do compared to `git commit -m`?", opts: ["Automatically stages modified tracked files (not untracked files) before committing", "Stages all untracked and ignored files too", "Amends the previous commit message", "Pushes directly to origin"], ans: 0, tag: "Commit Shortcut", exp: "`-a` stages changes to already-tracked files, but does not stage brand-new untracked files." },
+                    { q: "Which command configures your author name globally across repositories?", opts: ["git config --global user.name 'Dev Name'", "git set --author 'Dev Name'", "git identity 'Dev Name'", "git config --system author 'Dev Name'"], ans: 0, tag: "Git Config", exp: "`git config --global user.name` sets the default commit author name in `~/.gitconfig`." },
+                    { q: "Which command unstages a file from the index while keeping working directory edits intact?", opts: ["git restore --staged app.js", "git rm --force app.js", "git clean -fd app.js", "git gc --prune"], ans: 0, tag: "Unstaging", exp: "`git restore --staged <file>` removes changes from the staging area while preserving local edits." },
+                    { q: "Which command shows unstaged changes between the working directory and the index?", opts: ["git diff", "git diff --staged", "git log -p", "git show HEAD"], ans: 0, tag: "Diff Working Tree", exp: "`git diff` (with no flags) compares the working directory against the staging area." },
+                    { q: "Which command shows changes currently staged for the next commit?", opts: ["git diff --staged", "git diff --worktree", "git status -s", "git blame"], ans: 0, tag: "Diff Index", exp: "`git diff --staged` (or `--cached`) compares the index against `HEAD`." }
+                ],
+                advanced: [
+                    { q: "How do you stop tracking `config/local.env` in Git while keeping the file on disk?", opts: ["git rm --cached config/local.env", "git rm -f config/local.env", "git clean -f config/local.env", "git ignore config/local.env"], ans: 0, tag: "Untracking Files", exp: "`git rm --cached` removes the file from the index/repository while leaving it in your working tree." },
+                    { q: "Which command removes untracked files and directories from the working tree?", opts: ["git clean -fd", "git reset --clean", "git checkout --clean", "git diff --clean"], ans: 0, tag: "Cleaning Untracked", exp: "`git clean -fd` deletes untracked files (`-f`) and untracked directories (`-d`)." },
+                    { q: "Why do developers sometimes place an empty `.gitkeep` file inside an empty directory?", opts: ["Git tracks content/files rather than empty directories directly", "Git forbids directories without `.gitkeep`", "`.gitkeep` encrypts directory metadata", "`.gitkeep` auto-merges branches"], ans: 0, tag: "Empty Directories", exp: "Git builds commit trees from files/blobs, so empty directories aren't tracked unless a placeholder file exists." },
+                    { q: "Which command inspects effective config values and which file set each key?", opts: ["git config --list --show-origin", "git config --debug-all", "git env --show", "git check-config"], ans: 0, tag: "Config Origins", exp: "`git config --list --show-origin` prints every effective key alongside its source file path." },
+                    { q: "What is a bare repository (`git init --bare`) typically used for?", opts: ["A central shared/remote Git repository without a working directory", "A shallow clone with 1 commit", "A temporary backup of `.git/index`", "A local stash container"], ans: 0, tag: "Bare Repositories", exp: "Bare repositories store Git database files directly and serve as central push/fetch targets." }
+                ]
+            },
+            branching: {
+                basic: [
+                    { q: "Which command lists local branches and marks the active branch with `*`?", opts: ["git branch", "git branches -l", "git show-branch --all", "git head"], ans: 0, tag: "List Branches", exp: "`git branch` lists local branches and highlights the currently checked-out branch." },
+                    { q: "Which modern command creates and switches to a new branch `feature/login`?", opts: ["git switch -c feature/login", "git branch --switch feature/login", "git new-branch feature/login", "git init-branch feature/login"], ans: 0, tag: "git switch", exp: "`git switch -c <branch>` creates a new branch at `HEAD` and switches to it." },
+                    { q: "Which classic command creates and switches to `feature/api` in one step?", opts: ["git checkout -b feature/api", "git checkout --new feature/api", "git branch -m feature/api", "git pull -b feature/api"], ans: 0, tag: "git checkout -b", exp: "`git checkout -b <name>` creates the branch and updates `HEAD` to point to it." },
+                    { q: "Which command renames the current branch to `main`?", opts: ["git branch -m main", "git branch --rename main", "git switch --rename main", "git rename-branch main"], ans: 0, tag: "Rename Branch", exp: "`git branch -m <new-name>` renames the current branch." },
+                    { q: "Which command deletes a fully merged local branch `hotfix/old`?", opts: ["git branch -d hotfix/old", "git branch --purge hotfix/old", "git remove-branch hotfix/old", "git gc hotfix/old"], ans: 0, tag: "Delete Merged Branch", exp: "`git branch -d` deletes a branch only if its commits are already merged into `HEAD`/upstream." }
+                ],
+                intermediate: [
+                    { q: "When would you use `git branch -D feature/实验` instead of `-d`?", opts: ["To force-delete a branch that has unmerged commits", "To delete a remote branch on GitHub", "To rename a branch forcefully", "To detach HEAD"], ans: 0, tag: "Force Delete Branch", exp: "`-D` is shorthand for `--delete --force` and removes unmerged branches." },
+                    { q: "What does `HEAD` represent in Git?", opts: ["A pointer to the current commit or current local branch reference", "The very first commit in a repository", "The remote `origin/main` branch", "The staging area"], ans: 0, tag: "HEAD Pointer", exp: "`HEAD` normally points to the active branch ref (e.g., `refs/heads/main`), which points to a commit." },
+                    { q: "What is a 'detached HEAD' state?", opts: ["`HEAD` points directly to a specific commit hash instead of a branch name", "The `.git` folder is deleted", "The working tree has merge conflicts", "Local repo is disconnected from internet"], ans: 0, tag: "Detached HEAD", exp: "Checking out a raw commit SHA or tag puts `HEAD` in detached state; new commits won't advance a branch unless you create one." },
+                    { q: "Which command lists branches that have already been merged into the current branch?", opts: ["git branch --merged", "git branch --done", "git log --merged", "git diff --merged"], ans: 0, tag: "Merged Branches", exp: "`git branch --merged` shows branches whose tips are reachable from `HEAD`." },
+                    { q: "How do you create a new branch starting from a specific commit `a1b2c3d`?", opts: ["git switch -c fix/bug a1b2c3d", "git branch a1b2c3d fix/bug", "git checkout --from a1b2c3d fix/bug", "git reset fix/bug a1b2c3d"], ans: 0, tag: "Branch From Commit", exp: "`git switch -c <branch> <commit>` creates `<branch>` pointing at `<commit>` and checks it out." }
+                ],
+                advanced: [
+                    { q: "How do you safely save work done in a detached HEAD state before switching branches?", opts: ["git switch -c rescue-branch", "git checkout --detach-save", "git reset --hard", "git branch --fix-head"], ans: 0, tag: "Rescue Detached HEAD", exp: "`git switch -c <new-branch>` creates a branch at the current commit so commits aren't orphaned." },
+                    { q: "Which command shows branch tips, commit summaries, and relative parent relationships?", opts: ["git show-branch", "git branch-graph --all", "git tree --branches", "git reflog --branches"], ans: 0, tag: "Branch Relationships", exp: "`git show-branch` visualizes branches and their common ancestors." },
+                    { q: "If you accidentally committed to `main` instead of a new `feat/auth` branch, how do you move those commits cleanly?", opts: ["Create `feat/auth` at current `main`, then reset `main` back to `origin/main`", "Delete `.git/HEAD`", "Run `git rebase --abort`", "Run `git push --force-with-lease origin :main` first"], ans: 0, tag: "Misplaced Commit", exp: "Branch `feat/auth` captures the commits, and `git reset --hard origin/main` rewinds local `main`." },
+                    { q: "What does `git branch -f main HEAD~2` do?", opts: ["Force-moves branch pointer `main` two commits behind `HEAD`", "Fetches `main` from origin", "Deletes two commits from disk immediately", "Merges `HEAD~2` into `main`"], ans: 0, tag: "Move Branch Ref", exp: "`git branch -f <branch> <ref>` resets a branch label to point at `<ref>`." },
+                    { q: "Which command lists both local and remote-tracking branches?", opts: ["git branch -a", "git branch -u", "git branch -m", "git branch --global"], ans: 0, tag: "All Branches", exp: "`git branch -a` shows local branches and remote-tracking branches (`remotes/...`)." }
+                ]
+            },
+            merging: {
+                basic: [
+                    { q: "Which command merges branch `feature/ui` into your current branch?", opts: ["git merge feature/ui", "git join feature/ui", "git combine feature/ui", "git pull-branch feature/ui"], ans: 0, tag: "git merge", exp: "`git merge <branch>` integrates changes from `<branch>` into the current branch." },
+                    { q: "What is a Fast-Forward merge?", opts: ["Target branch moves forward along a direct linear path with no divergent commits", "A merge that skips conflict resolution", "A merge that squashes all history", "A force push to main"], ans: 0, tag: "Fast-Forward", exp: "When `HEAD` is a direct ancestor of the merged branch, Git simply advances the branch pointer." },
+                    { q: "Which command aborts an in-progress merge with conflicts and restores pre-merge state?", opts: ["git merge --abort", "git merge --cancel", "git reset --merge-off", "git revert --abort"], ans: 0, tag: "Abort Merge", exp: "`git merge --abort` stops the merge and restores the working tree to before the merge started." },
+                    { q: "Which markers indicate a merge conflict inside a conflicted file?", opts: ["`<<<<<<<`, `=======`, `>>>>>>>`", "`<<<`, `===`, `>>>`", "`/* CONFLICT */`", "`[[HEAD]]`, `[[MAIN]]`"], ans: 0, tag: "Conflict Markers", exp: "Git wraps conflicting sections between `<<<<<<<`, `=======`, and `>>>>>>>`." },
+                    { q: "After editing a conflicted file to resolve it, what do you run next?", opts: ["git add <file> (then `git commit` if not already auto-completing)", "git conflict --resolved", "git push --resolve", "git diff --fix"], ans: 0, tag: "Resolve Conflict", exp: "Staging the resolved file (`git add`) marks the conflict resolved so the merge commit can finish." }
+                ],
+                intermediate: [
+                    { q: "Which flag forces Git to create a merge commit even when a fast-forward is possible?", opts: ["git merge --no-ff feature/x", "git merge --ff-only feature/x", "git merge --squash feature/x", "git merge --no-commit"], ans: 0, tag: "--no-ff Merge", exp: "`--no-ff` preserves the branch boundary with an explicit merge commit." },
+                    { q: "What does `git rebase main` do when you are on a feature branch?", opts: ["Replays your feature branch commits on top of the tip of `main`", "Merges `main` into your branch with a merge commit", "Deletes `main` and renames feature branch to `main`", "Discards local commits"], ans: 0, tag: "git rebase", exp: "`git rebase main` re-applies your branch's commits sequentially onto `main` for a linear history." },
+                    { q: "What does `git merge --squash feature/login` do?", opts: ["Combines all branch changes into staged changes without recording a merge parent link", "Rebases and force-pushes automatically", "Deletes the feature branch", "Creates 1 commit per file"], ans: 0, tag: "Squash Merge", exp: "`--squash` stages all net changes from the branch so you can make a single commit on target." },
+                    { q: "Which command continues a rebase after resolving a conflict and staging files?", opts: ["git rebase --continue", "git rebase --resume", "git merge --continue", "git commit --rebase"], ans: 0, tag: "Rebase Continue", exp: "`git rebase --continue` resumes replaying remaining commits onto the target base." },
+                    { q: "Which flag ensures a merge only succeeds if it can fast-forward?", opts: ["git merge --ff-only", "git merge --fast", "git merge --only-ff", "git rebase --ff"], ans: 0, tag: "--ff-only", exp: "`git merge --ff-only` aborts if branches have diverged and require a merge commit." }
+                ],
+                advanced: [
+                    { q: "What is the golden rule of `git rebase` regarding shared/public branches?", opts: ["Do not rebase commits that have already been pushed and shared with others", "Always rebase `main` onto every feature branch every hour", "Only rebase when there are no files changed", "Rebase replaces `git pull`"], ans: 0, tag: "Rebase Safety", exp: "Rebasing rewrites commit hashes; rewriting shared history disrupts teammates who based work on old SHAs." },
+                    { q: "What does `git rebase -i HEAD~4` (interactive rebase) allow you to do?", opts: ["Reorder, squash, edit, reword, or drop the last 4 commits", "Inspect interactive diffs only", "Push 4 branches at once", "Run bisect automatically"], ans: 0, tag: "Interactive Rebase", exp: "Interactive rebase (`-i`) lets you edit, squash (`s`/`f`), reword (`r`), reorder, or drop (`d`) commits." },
+                    { q: "In a merge conflict, what does `git checkout --ours <file>` vs `--theirs <file>` select during a merge?", opts: ["`--ours` picks current branch (`HEAD`); `--theirs` picks incoming merged branch", "`--ours` always picks remote; `--theirs` picks local", "Both delete the file", "They swap branch names"], ans: 0, tag: "Ours vs Theirs", exp: "During `git merge`, `--ours` is your current branch and `--theirs` is the branch being merged in (note: reversed during `rebase`)." },
+                    { q: "What does `git rerere` (Reuse Recorded Resolution) do?", opts: ["Records how you resolved a conflict and reuses it if the same conflict recurs", "Reverts remote branches", "Renames remote repositories", "Repacks loose objects"], ans: 0, tag: "rerere", exp: "`rerere` remembers conflict resolutions and automatically applies matching fixes in future merges/rebases." },
+                    { q: "Which command skips the current conflicting commit during a `git rebase`?", opts: ["git rebase --skip", "git rebase --drop-current", "git reset --skip", "git cherry-pick --skip"], ans: 0, tag: "Rebase Skip", exp: "`git rebase --skip` drops the current patch being rebased and moves to the next commit." }
+                ]
+            },
+            history: {
+                basic: [
+                    { q: "Which command displays commit history in reverse chronological order?", opts: ["git log", "git history", "git commits", "git timeline"], ans: 0, tag: "git log", exp: "`git log` lists commits starting from `HEAD` backwards through parent commits." },
+                    { q: "Which command shows a compact one-line-per-commit log with branch/tag decorations?", opts: ["git log --oneline --graph --decorate", "git log --short-tree", "git status --log", "git diff --summary"], ans: 0, tag: "Log Graph", exp: "`--oneline --graph --decorate` gives a concise ASCII commit graph with branch and tag labels." },
+                    { q: "Which command shows details and patch diff of a specific commit `9f8e7d6`?", opts: ["git show 9f8e7d6", "git inspect-commit 9f8e7d6", "git log-one 9f8e7d6", "git view 9f8e7d6"], ans: 0, tag: "git show", exp: "`git show <commit>` prints commit metadata and the diff introduced by that commit." },
+                    { q: "Which command creates a new commit that undoes the changes of an earlier commit `abc1234`?", opts: ["git revert abc1234", "git undo abc1234", "git erase abc1234", "git rollback abc1234"], ans: 0, tag: "git revert", exp: "`git revert <sha>` applies an inverse commit safely without rewriting existing history." },
+                    { q: "Which command shows who last modified each line of `README.md` and in which commit?", opts: ["git blame README.md", "git who README.md", "git author README.md", "git trace README.md"], ans: 0, tag: "git blame", exp: "`git blame <file>` annotates each line with the commit SHA, author, and timestamp." }
+                ],
+                intermediate: [
+                    { q: "What does `git reset --soft HEAD~1` do?", opts: ["Moves `HEAD` back 1 commit while keeping changes staged in the index", "Deletes the last commit and wipes working directory changes", "Creates a new revert commit", "Deletes the remote branch"], ans: 0, tag: "Soft Reset", exp: "`--soft` moves the branch pointer back without changing the index or working tree." },
+                    { q: "What does `git reset --hard HEAD~1` do?", opts: ["Moves `HEAD` back 1 commit and discards staged and working tree changes", "Only unstages files", "Creates a safe public undo commit", "Archives commits to a tag"], ans: 0, tag: "Hard Reset", exp: "`--hard` resets `HEAD`, the index, and the working directory to match the target commit." },
+                    { q: "What does `git reset --mixed HEAD~1` (the default `--mixed`) do?", opts: ["Moves `HEAD` back 1 commit and unstages changes while keeping them in working tree", "Deletes untracked files", "Reverts a merge commit only", "Pushes reset to origin"], ans: 0, tag: "Mixed Reset", exp: "`--mixed` is default: it rewinds `HEAD` and resets the staging area while keeping edits locally." },
+                    { q: "Why is `git revert` preferred over `git reset --hard` on a shared `main` branch?", opts: ["`git revert` adds a new commit and preserves shared commit history", "`git revert` deletes remote branches automatically", "`git reset` cannot target commits", "`git revert` never has conflicts"], ans: 0, tag: "Revert vs Reset", exp: "Reverting keeps history append-only and safe for collaborators already synced with `main`." },
+                    { q: "How do you search commit messages for the word `timeout`?", opts: ["git log --grep='timeout'", "git log --search='timeout'", "git show --grep='timeout'", "git blame --grep='timeout'"], ans: 0, tag: "Log Grep", exp: "`git log --grep='<pattern>'` filters commits whose commit messages match `<pattern>`." }
+                ],
+                advanced: [
+                    { q: "What is `git reflog` used for?", opts: ["Tracking local movements of `HEAD` and branch tips to recover lost/reset commits", "Viewing remote repository access logs", "Listing all Git tags", "Squashing commits on GitHub"], ans: 0, tag: "git reflog", exp: "`git reflog` logs local `HEAD`/ref updates, letting you recover commits after a reset or rebase." },
+                    { q: "How do you amend the commit message or add forgotten files to the most recent commit?", opts: ["git commit --amend", "git commit --fix-last", "git rebase --amend", "git revert --amend"], ans: 0, tag: "Amend Commit", exp: "`git commit --amend` replaces the top commit with a new commit containing staged changes and message." },
+                    { q: "How do you search commit history for commits that added or removed the string `API_KEY`?", opts: ["git log -S 'API_KEY' -p", "git log --find-string 'API_KEY'", "git grep --history 'API_KEY'", "git diff --all 'API_KEY'"], ans: 0, tag: "Pickaxe (-S)", exp: "`git log -S '<string>'` (pickaxe) finds commits where the count of `<string>` occurrences changed." },
+                    { q: "What does `git log main..feature` show?", opts: ["Commits reachable from `feature` that are not reachable from `main`", "A diff of `main` and `feature` files only", "Commits deleted from `main`", "Tags on `main`"], ans: 0, tag: "Commit Range", exp: "`A..B` shows commits in `B` excluding those already in `A`." },
+                    { q: "What does `git log main...feature` (three dots) show in `git log`?", opts: ["Commits reachable from either `main` or `feature` but not both (symmetric difference)", "Only fast-forward commits", "Stash entries", "Submodule commits"], ans: 0, tag: "Symmetric Difference", exp: "`A...B` in `git log` displays commits unique to either branch relative to their merge base." }
+                ]
+            },
+            remotes: {
+                basic: [
+                    { q: "Which command adds a remote named `origin` pointing to a repository URL?", opts: ["git remote add origin <url>", "git remote set origin <url>", "git origin add <url>", "git clone --remote <url>"], ans: 0, tag: "Add Remote", exp: "`git remote add <name> <url>` registers a remote alias and URL." },
+                    { q: "Which command downloads remote commits and refs without merging them into your branch?", opts: ["git fetch", "git pull", "git push", "git merge --remote"], ans: 0, tag: "git fetch", exp: "`git fetch` updates remote-tracking branches (like `origin/main`) without altering your working branch." },
+                    { q: "Which command pushes your local `main` branch to `origin` and sets upstream tracking?", opts: ["git push -u origin main", "git push --track-upstream main", "git upload origin main", "git send origin main"], ans: 0, tag: "Push & Upstream", exp: "`git push -u origin main` (`--set-upstream`) links local `main` to `origin/main`." },
+                    { q: "Which command lists configured remotes and their fetch/push URLs?", opts: ["git remote -v", "git remotes --list", "git config --remotes", "git ls-remote --local"], ans: 0, tag: "List Remotes", exp: "`git remote -v` displays remote names along with their `fetch` and `push` URLs." },
+                    { q: "What does `git pull` do in its default configuration?", opts: ["Runs `git fetch` followed by merging the tracked remote branch into current branch", "Only downloads files without updating refs", "Force-overwrites local branch with remote", "Deletes local branches"], ans: 0, tag: "git pull", exp: "By default, `git pull` fetches remote changes and merges them into the current branch." }
+                ],
+                intermediate: [
+                    { q: "Which command pulls remote changes using rebase instead of creating a merge commit?", opts: ["git pull --rebase", "git pull --ff-only", "git fetch --rebase-all", "git push --rebase"], ans: 0, tag: "Pull Rebase", exp: "`git pull --rebase` fetches upstream changes and rebases your local commits on top." },
+                    { q: "Why is `git push` rejected with `non-fast-forward` when remote has newer commits?", opts: ["Remote branch contains commits you don't have locally; fetch/pull or rebase first", "Your SSH key expired", "Your commit message is too short", "Local branch is not named `master`"], ans: 0, tag: "Non-Fast-Forward", exp: "Git prevents overwriting remote commits unless you integrate them or explicitly force-push." },
+                    { q: "Which command prunes stale remote-tracking branches that were deleted on the remote?", opts: ["git fetch --prune", "git remote clean", "git branch --prune-remote", "git gc --prune-remotes"], ans: 0, tag: "Prune Stale Refs", exp: "`git fetch --prune` (or `git remote prune origin`) cleans up local `origin/*` refs removed on remote." },
+                    { q: "How do you delete a remote branch named `feature/temp` on `origin`?", opts: ["git push origin --delete feature/temp", "git branch -dr origin/feature/temp", "git remote rm feature/temp", "git fetch --delete feature/temp"], ans: 0, tag: "Delete Remote Branch", exp: "`git push origin --delete <branch>` (or `git push origin :<branch>`) deletes the branch on the remote." },
+                    { q: "Which command inspects remote branch/tag heads directly from `origin`?", opts: ["git ls-remote origin", "git remote-heads origin", "git status --remote-refs", "git log --remote-only"], ans: 0, tag: "ls-remote", exp: "`git ls-remote <remote>` queries the remote repository for branch and tag commit hashes." }
+                ],
+                advanced: [
+                    { q: "Why is `git push --force-with-lease` safer than `git push --force`?", opts: ["It fails if the remote branch was updated by someone else since your last fetch", "It skips hooks and rebases automatically", "It pushes without authentication", "It deletes tags automatically"], ans: 0, tag: "force-with-lease", exp: "`--force-with-lease` verifies remote ref expectations so you don't clobber teammate commits." },
+                    { q: "Which command creates a shallow clone with only the latest 1 commit?", opts: ["git clone --depth 1 <url>", "git clone --single-commit-only <url>", "git clone --shallow <url>", "git clone --mini <url>"], ans: 0, tag: "Shallow Clone", exp: "`--depth 1` truncates commit history to the most recent commit to save bandwidth and disk." },
+                    { q: "How do you change the URL of an existing remote `origin`?", opts: ["git remote set-url origin <new-url>", "git remote update origin <new-url>", "git remote edit origin <new-url>", "git config --replace origin <new-url>"], ans: 0, tag: "Update Remote URL", exp: "`git remote set-url <name> <url>` updates the repository URL for an existing remote." },
+                    { q: "What does `git clone --no-checkout <url>` do?", opts: ["Clones repository metadata/objects without checking out working tree files", "Clones without `.git` folder", "Clones only branches starting with `no-`", "Disables `origin`"], ans: 0, tag: "No-Checkout Clone", exp: "`--no-checkout` populates `.git` while leaving the working tree unpopulated until checkout/sparse-checkout." },
+                    { q: "How do you fetch all remotes and all branches in one command?", opts: ["git fetch --all --tags", "git pull --all-remotes", "git remote --fetch-all", "git sync --all"], ans: 0, tag: "Fetch All", exp: "`git fetch --all --tags` fetches updates and tags across all configured remotes." }
+                ]
+            },
+            stash_tag: {
+                basic: [
+                    { q: "Which command temporarily shelves uncommitted working tree and index changes?", opts: ["git stash", "git shelf", "git park", "git hold"], ans: 0, tag: "git stash", exp: "`git stash` (or `git stash push`) saves uncommitted changes and cleans the working tree." },
+                    { q: "Which command lists all saved stashes?", opts: ["git stash list", "git stashes", "git stash --show-all", "git log --stash"], ans: 0, tag: "List Stashes", exp: "`git stash list` shows stashes as `stash@{0}`, `stash@{1}`, etc." },
+                    { q: "Which command applies the latest stash and removes it from the stash stack?", opts: ["git stash pop", "git stash apply --drop", "git stash take", "git stash unapply"], ans: 0, tag: "Stash Pop", exp: "`git stash pop` reapplies `stash@{0}` and drops it if applied cleanly." },
+                    { q: "Which command creates a lightweight tag `v1.0.0` at `HEAD`?", opts: ["git tag v1.0.0", "git release v1.0.0", "git branch --tag v1.0.0", "git mark v1.0.0"], ans: 0, tag: "Lightweight Tag", exp: "`git tag v1.0.0` creates a tag reference pointing to the current commit." },
+                    { q: "Which command applies a specific commit `4d5e6f7` onto your current branch?", opts: ["git cherry-pick 4d5e6f7", "git pick 4d5e6f7", "git graft 4d5e6f7", "git copy-commit 4d5e6f7"], ans: 0, tag: "git cherry-pick", exp: "`git cherry-pick <sha>` applies the changes from a single commit onto `HEAD`." }
+                ],
+                intermediate: [
+                    { q: "How do you create an annotated tag with a release message (`v1.2.0`)?", opts: ["git tag -a v1.2.0 -m 'Release v1.2.0'", "git tag --annotate v1.2.0", "git commit --tag v1.2.0", "git push --create-tag v1.2.0"], ans: 0, tag: "Annotated Tag", exp: "`git tag -a <tag> -m '<msg>'` creates a full tag object with tagger info and message." },
+                    { q: "By default, does `git push` push newly created local tags to `origin`?", opts: ["No; use `git push origin <tag>` or `git push --tags`", "Yes, always", "Only lightweight tags", "Only on Fridays"], ans: 0, tag: "Push Tags", exp: "Tags are not pushed automatically with normal branch pushes; pass the tag name or `--tags`." },
+                    { q: "Which command applies `stash@{1}` without removing it from the stash list?", opts: ["git stash apply stash@{1}", "git stash peek stash@{1}", "git stash read stash@{1}", "git stash copy stash@{1}"], ans: 0, tag: "Stash Apply", exp: "`git stash apply stash@{n}` applies the stash while keeping it stored in the list." },
+                    { q: "How do you include untracked files when stashing changes?", opts: ["git stash -u", "git stash --untracked-only", "git stash --all-clean", "git stash -f"], ans: 0, tag: "Stash Untracked", exp: "`git stash -u` (`--include-untracked`) stashes untracked files alongside tracked changes." },
+                    { q: "What tool uses binary search over commits to find which commit introduced a bug?", opts: ["git bisect", "git search-bug", "git log --binary", "git blame --bisect"], ans: 0, tag: "git bisect", exp: "`git bisect` narrows down bad commits in `O(log N)` steps using `good` and `bad` markers." }
+                ],
+                advanced: [
+                    { q: "In `git bisect`, after `git bisect start`, `git bisect bad`, and `git bisect good v1.0`, how do you finish?", opts: ["git bisect reset", "git bisect end", "git bisect quit-clean", "git reset --bisect"], ans: 0, tag: "Bisect Reset", exp: "`git bisect reset` cleans up bisect state and returns `HEAD` to the original branch." },
+                    { q: "How do you delete a tag named `v0.9-rc1` both locally and on `origin`?", opts: ["git tag -d v0.9-rc1 && git push origin :refs/tags/v0.9-rc1", "git tag --remove-remote v0.9-rc1", "git revert-tag v0.9-rc1", "git branch -d v0.9-rc1"], ans: 0, tag: "Delete Tag", exp: "Delete locally with `git tag -d` and delete on remote with `git push origin :refs/tags/<tag>`." },
+                    { q: "Which `git cherry-pick` option avoids creating a new commit and stages changes instead?", opts: ["git cherry-pick -n <sha>", "git cherry-pick --stage-only", "git cherry-pick --dry", "git cherry-pick --soft"], ans: 0, tag: "Cherry-Pick --no-commit", exp: "`-n` (`--no-commit`) applies the commit's changes into the index/working tree without committing." },
+                    { q: "How do you give a stash a descriptive label when creating it?", opts: ["git stash push -m 'wip: parser refactor'", "git stash name 'wip: parser refactor'", "git stash tag 'wip: parser refactor'", "git stash --label 'wip: parser refactor'"], ans: 0, tag: "Named Stash", exp: "`git stash push -m '<message>'` attaches a readable label shown in `git stash list`." },
+                    { q: "What does `git stash branch fix/issue-42 stash@{0}` do?", opts: ["Creates `fix/issue-42` at the stash's base commit, applies the stash, and drops it", "Deletes all other stashes", "Merges `stash@{0}` into `main`", "Exports stash as a `.patch` file"], ans: 0, tag: "Stash to Branch", exp: "It checks out a branch at the commit where the stash was created and pops the stash cleanly." }
+                ]
+            },
+            workflows: {
+                basic: [
+                    { q: "In a standard GitHub Flow or Trunk-Based feature workflow, where should new features be developed?", opts: ["On a short-lived feature branch off `main`, merged via Pull Request", "Directly pushing untested commits to `main`", "Inside `.git/objects`", "On detached `HEAD`"], ans: 0, tag: "Feature Branch Flow", exp: "Creating a branch per feature/fix keeps `main` deployable and enables code review via PRs." },
+                    { q: "Where are local repository Git hooks stored by default?", opts: [".git/hooks", ".github/hooks", "/etc/git/hooks", "hooks/local"], ans: 0, tag: "Git Hooks Path", exp: "Default client and server hook templates/scripts live under `.git/hooks/`." },
+                    { q: "Which hook runs automatically on your machine right before `git commit` finalizes a commit?", opts: ["pre-commit", "post-push", "pre-clone", "post-merge-remote"], ans: 0, tag: "pre-commit Hook", exp: "The `pre-commit` hook runs before commit creation and can block commits if linters/tests fail." },
+                    { q: "What are the 4 core Git object types in the object database?", opts: ["blob, tree, commit, tag", "file, folder, diff, head", "index, branch, stash, remote", "hash, pack, ref, log"], ans: 0, tag: "Git Objects", exp: "Git's content-addressable object store consists of `blob`, `tree`, `commit`, and `tag` objects." },
+                    { q: "Which command computes the SHA-1/SHA-256 object hash of content or a file?", opts: ["git hash-object", "git sha-sum", "git digest", "git object-id"], ans: 0, tag: "Plumbing: hash-object", exp: "`git hash-object` computes object IDs (and can write blobs into `.git/objects` with `-w`)." }
+                ],
+                intermediate: [
+                    { q: "What does a `blob` object store in Git?", opts: ["Raw file contents (without filename or permissions)", "Directory listings and file modes", "Commit author and parent pointers", "Branch names"], ans: 0, tag: "Blob Object", exp: "A `blob` holds raw byte content of a file; filenames and modes live in `tree` objects." },
+                    { q: "What does a `tree` object represent in Git?", opts: ["A directory snapshot mapping filenames, modes, and `blob`/`tree` SHA hashes", "A single line of diff", "A remote URL", "A stash entry"], ans: 0, tag: "Tree Object", exp: "Each `tree` object maps entry names and permissions to `blob` (file) or `tree` (subdirectory) hashes." },
+                    { q: "Which command initializes and updates nested Git submodules after cloning a parent repo?", opts: ["git submodule update --init --recursive", "git subrepo sync --all", "git clone --submodules-fix", "git pull --nested"], ans: 0, tag: "Submodules", exp: "`git submodule update --init --recursive` initializes and checks out submodules and nested ones." },
+                    { q: "Which command inspects the type or contents of a Git object by its SHA?", opts: ["git cat-file -t <sha> / git cat-file -p <sha>", "git read-obj <sha>", "git dump-sha <sha>", "git parse-object <sha>"], ans: 0, tag: "Plumbing: cat-file", exp: "`git cat-file -t` prints object type (`blob`, `tree`, `commit`, `tag`); `-p` pretty-prints content." },
+                    { q: "Why are local `.git/hooks` scripts not automatically cloned with a repository?", opts: ["For security reasons, executable scripts aren't auto-installed from remote clones", "Git does not support shell scripts", "Hooks only work on bare repos", "`.git` is ignored by clone"], ans: 0, tag: "Hook Security", exp: "Auto-executing arbitrary repo scripts on clone would be a security risk; teams often share templates or tools." }
+                ],
+                advanced: [
+                    { q: "How can a team share version-controlled Git hooks in a repository?", opts: ["Store hook scripts in a tracked folder (e.g., `.githooks`) and set `git config core.hooksPath .githooks`", "Edit `.git/config` inside `git clone` URLs", "Put hooks inside `.gitignore`", "Use `git stash` for hooks"], ans: 0, tag: "Shared Hooks", exp: "Setting `core.hooksPath` points Git to a version-controlled directory inside the repo." },
+                    { q: "What does `git worktree add ../hotfix-wt hotfix/urgent` do?", opts: ["Checks out another branch in a separate working directory linked to the same `.git` repo", "Creates a second independent `.git` clone", "Merges `hotfix/urgent` into `main`", "Deletes the working tree"], ans: 0, tag: "Git Worktrees", exp: "`git worktree add` lets you work on multiple branches simultaneously in separate folders." },
+                    { q: "What does `git gc --auto` do in a repository?", opts: ["Packs loose objects into packfiles and cleans up unreachable/expired objects", "Deletes all unpushed branches", "Resets `HEAD` to initial commit", "Pushes garbage to origin"], ans: 0, tag: "Garbage Collection", exp: "`git gc` compacts loose objects into packfiles and prunes unreferenced objects past expiry." },
+                    { q: "Why does changing even a single character in a file change its Git object hash completely?", opts: ["Git uses cryptographic hashing over object header + content (SHA-1/SHA-256)", "Git appends timestamps to every blob", "Git hashes only the filename", "Git increments a counter"], ans: 0, tag: "Content Addressing", exp: "Cryptographic hashes exhibit the avalanche effect: any byte change yields a completely different digest." },
+                    { q: "Which command shows all reachable/unreachable objects and checks repository integrity?", opts: ["git fsck", "git check-repo", "git verify-tree", "git audit-git"], ans: 0, tag: "Repository Integrity", exp: "`git fsck` verifies object connectivity, checksums, and dangling/unreachable objects." }
+                ]
+            }
+        };
+
+        const EXTRA_TEMPLATES = {
+            basics: [
+                { title: "Stage All Changes", cmd: "git add -A", area: "Index Staging", exp: "`git add -A` stages all new, modified, and deleted files across the working tree." },
+                { title: "Short Status Output", cmd: "git status -s", area: "Compact Status", exp: "`git status -s` shows concise two-column index and working tree status codes." },
+                { title: "Patch-Level Staging", cmd: "git add -p", area: "Interactive Hunks", exp: "`git add -p` lets you interactively stage specific hunks within modified files." },
+                { title: "Inspect Ignored Files", cmd: "git status --ignored", area: "Ignored Paths", exp: "`git status --ignored` lists files matching `.gitignore` rules." },
+                { title: "Show Commit Metadata", cmd: "git log -n 5 --stat", area: "File Stats", exp: "`git log -n 5 --stat` shows the last 5 commits along with changed file summaries." }
+            ],
+            branching: [
+                { title: "List Unmerged Branches", cmd: "git branch --no-merged", area: "Pending Branches", exp: "`git branch --no-merged` lists local branches not yet merged into current `HEAD`." },
+                { title: "Switch to Existing Branch", cmd: "git switch main", area: "Branch Switching", exp: "`git switch <branch>` switches the working tree and `HEAD` to `<branch>`." },
+                { title: "Checkout Existing Branch", cmd: "git checkout develop", area: "Legacy Switch", exp: "`git checkout <branch>` switches to an existing local branch." },
+                { title: "Show Current Branch Name", cmd: "git branch --show-current", area: "Active Branch", exp: "`git branch --show-current` prints the active branch name (or empty if detached)." },
+                { title: "Delete Merged Local Branch", cmd: "git branch -d feature/cleanup", area: "Branch Cleanup", exp: "`git branch -d` safely deletes a branch already merged into upstream/HEAD." }
+            ],
+            merging: [
+                { title: "Merge Without Fast-Forward", cmd: "git merge --no-ff feature/auth", area: "Explicit Merge", exp: "`--no-ff` creates a merge commit even if a fast-forward merge is possible." },
+                { title: "Abort Active Rebase", cmd: "git rebase --abort", area: "Rebase Rollback", exp: "`git rebase --abort` cancels an active rebase and restores the original branch state." },
+                { title: "Squash Feature Into Index", cmd: "git merge --squash feature/search", area: "Squash Workflow", exp: "`--squash` stages combined changes from the branch without creating a merge commit." },
+                { title: "Continue Merge After Fix", cmd: "git merge --continue", area: "Finish Merge", exp: "`git merge --continue` completes a paused merge once conflicts are staged." },
+                { title: "Check Common Ancestor", cmd: "git merge-base main feature/api", area: "Merge Base", exp: "`git merge-base A B` finds the best common ancestor commit of `A` and `B`." }
+            ],
+            history: [
+                { title: "Limit Log Count", cmd: "git log -n 10 --oneline", area: "Recent Commits", exp: "`-n 10 --oneline` displays the 10 most recent commits on single lines." },
+                { title: "Diff Between Two Commits", cmd: "git diff abc1234 def5678", area: "Commit Comparison", exp: "`git diff <sha1> <sha2>` shows differences between two commits." },
+                { title: "Discard Working File Edits", cmd: "git restore src/app.ts", area: "Restore File", exp: "`git restore <file>` discards unstaged working directory changes to `<file>`." },
+                { title: "Revert Without Auto-Commit", cmd: "git revert --no-commit 9a8b7c6", area: "Staged Revert", exp: "`--no-commit` applies the inverse patch to index/working tree without committing yet." },
+                { title: "Inspect Reflog Entries", cmd: "git reflog -n 15", area: "HEAD Recovery", exp: "`git reflog` shows recent local `HEAD` movements for recovery." }
+            ],
+            remotes: [
+                { title: "Push Current Branch", cmd: "git push", area: "Upstream Push", exp: "With upstream configured, `git push` pushes the current branch to its tracked remote." },
+                { title: "Fetch Specific Remote", cmd: "git fetch origin", area: "Remote Sync", exp: "`git fetch origin` updates remote-tracking refs from `origin`." },
+                { title: "Remove Configured Remote", cmd: "git remote remove upstream", area: "Remote Cleanup", exp: "`git remote remove <name>` removes a remote configuration entry." },
+                { title: "Show Remote Details", cmd: "git remote show origin", area: "Remote Info", exp: "`git remote show origin` prints remote URLs, tracked branches, and push/pull status." },
+                { title: "Pull With Rebase", cmd: "git pull --rebase origin main", area: "Linear Sync", exp: "`git pull --rebase` replays local commits atop fetched upstream changes." }
+            ],
+            stash_tag: [
+                { title: "Show Stash Diff", cmd: "git stash show -p stash@{0}", area: "Inspect Stash", exp: "`git stash show -p` displays the full patch stored in a stash entry." },
+                { title: "Drop Specific Stash", cmd: "git stash drop stash@{0}", area: "Remove Stash", exp: "`git stash drop <stash>` deletes a single stash entry." },
+                { title: "List Matching Tags", cmd: "git tag -l 'v1.*'", area: "Filter Tags", exp: "`git tag -l '<pattern>'` lists tags matching a glob pattern." },
+                { title: "Push Single Tag", cmd: "git push origin v2.0.0", area: "Publish Tag", exp: "`git push origin v2.0.0` pushes tag `v2.0.0` to `origin`." },
+                { title: "Cherry-Pick Commit", cmd: "git cherry-pick 3f2a1b0", area: "Selective Port", exp: "`git cherry-pick <sha>` applies commit `3f2a1b0` onto the current branch." }
+            ],
+            workflows: [
+                { title: "List Worktrees", cmd: "git worktree list", area: "Worktree Status", exp: "`git worktree list` shows all active working trees linked to the repository." },
+                { title: "Inspect Object Type", cmd: "git cat-file -t HEAD", area: "Object Inspection", exp: "`git cat-file -t` prints the Git object type of a reference or SHA." },
+                { title: "List All Git Refs", cmd: "git show-ref", area: "References", exp: "`git show-ref` lists branches, tags, and remote-tracking references." },
+                { title: "Verify Repository Objects", cmd: "git fsck --full", area: "Integrity Check", exp: "`git fsck --full` checks object hashes and connectivity across the repo." },
+                { title: "Repack Objects", cmd: "git repack -a -d", area: "Packfiles", exp: "`git repack -a -d` packs loose objects and removes redundant loose copies." }
+            ]
+        };
+
+        function buildQuestionBank() {
+            const bank = {};
+            TOPICS.forEach((topic) => {
+                bank[topic.id] = {};
+                LEVELS.forEach((level) => {
+                    const list = [...(SEED_QUESTIONS[topic.id]?.[level] || [])];
+                    const extras = EXTRA_TEMPLATES[topic.id] || [];
+                    const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+                    let idx = 0;
+
+                    while (list.length < QUESTIONS_PER_TIER) {
+                        const tpl = extras[idx % extras.length];
+                        const variant = Math.floor(idx / extras.length) + 1;
+                        const askCmd = variant % 2 === 1;
+
+                        list.push(
+                            askCmd
+                                ? {
+                                    q: `[${levelLabel} #${list.length + 1}] Which Git command performs "${tpl.title}" (${tpl.area})?`,
+                                    opts: [
+                                        tpl.cmd,
+                                        `git ${tpl.area.toLowerCase().replace(/[^a-z0-9]+/g, '-')} --force-invalid`,
+                                        `git reset --hard-remote ${tpl.cmd.split(' ')[1] || 'head'}`,
+                                        `rm -rf .git/objects/pack/*`
+                                    ],
+                                    ans: 0,
+                                    tag: `${tpl.area} • ${levelLabel}`,
+                                    exp: `${tpl.exp} (${levelLabel} practice)`
+                                }
+                                : {
+                                    q: `[${levelLabel} #${list.length + 1}] In ${topic.name}, what does \`${tpl.cmd}\` do?`,
+                                    opts: [
+                                        tpl.exp,
+                                        "Deletes all remote branches on GitHub automatically",
+                                        "Rewrites every commit author to root",
+                                        "Disables Git object hashing permanently"
+                                    ],
+                                    ans: 0,
+                                    tag: `${tpl.area} • ${levelLabel}`,
+                                    exp: tpl.exp
+                                }
+                        );
+                        idx++;
+                    }
+
+                    bank[topic.id][level] = list.slice(0, QUESTIONS_PER_TIER).map((item, i) => ({
+                        id: `${topic.code}-${level.slice(0, 3).toUpperCase()}-${String(i + 1).padStart(2, '0')}`,
+                        ...item
+                    }));
+                });
+            });
+            return bank;
+        }
+
+        const QUESTION_BANK = buildQuestionBank();
+
+        // --- STRICT SEQUENTIAL TIER UNLOCK LOGIC ---
+        // Basic is always unlocked.
+        // Intermediate requires completing (mastering) all 20 Basic questions in that topic.
+        // Advanced requires completing (mastering) all 20 Intermediate questions in that topic.
+        function getTierMasteredCount(topicId, level) {
+            const tierQs = QUESTION_BANK[topicId]?.[level] || [];
+            return tierQs.filter((q) => appState.masteredIds.includes(q.id)).length;
+        }
+
+        function isTierCompleted(topicId, level) {
+            return getTierMasteredCount(topicId, level) >= QUESTIONS_PER_TIER;
+        }
+
+        function isLevelUnlocked(topicId, level) {
+            if (level === 'basic') return true;
+            if (level === 'intermediate') return isTierCompleted(topicId, 'basic');
+            if (level === 'advanced') {
+                return isTierCompleted(topicId, 'basic') && isTierCompleted(topicId, 'intermediate');
+            }
+            return false;
+        }
+
+        function getLockReason(topicId, level) {
+            const topicName = (TOPICS.find((t) => t.id === topicId) || TOPICS[0]).name;
+            if (level === 'intermediate') {
+                const basicDone = getTierMasteredCount(topicId, 'basic');
+                const rem = Math.max(0, QUESTIONS_PER_TIER - basicDone);
+                return `Intermediate is LOCKED for ${topicName}. Master ${rem} more Basic question${rem === 1 ? '' : 's'} (${basicDone}/${QUESTIONS_PER_TIER} completed) to unlock.`;
+            }
+            if (level === 'advanced') {
+                if (!isTierCompleted(topicId, 'basic')) {
+                    const basicDone = getTierMasteredCount(topicId, 'basic');
+                    return `Advanced is LOCKED for ${topicName}. Finish Basic (${basicDone}/${QUESTIONS_PER_TIER}) and then all ${QUESTIONS_PER_TIER} Intermediate questions first.`;
+                }
+                const interDone = getTierMasteredCount(topicId, 'intermediate');
+                const rem = Math.max(0, QUESTIONS_PER_TIER - interDone);
+                return `Advanced is LOCKED for ${topicName}. Master ${rem} more Intermediate question${rem === 1 ? '' : 's'} (${interDone}/${QUESTIONS_PER_TIER} completed) to unlock.`;
+            }
+            return '';
+        }
+
+        function enforceUnlockedLevelForTopic(topicId) {
+            if (!isLevelUnlocked(topicId, appState.level)) {
+                if (appState.level === 'advanced' && isLevelUnlocked(topicId, 'intermediate')) {
+                    appState.level = 'intermediate';
+                } else {
+                    appState.level = 'basic';
+                }
+            }
+        }
+
+        // --- STATE & PERSISTENCE ---
+        const STORAGE_KEY = 'git_ops_arena_gh_v1';
+        const defaultState = {
+            theme: 'dark',
+            tab: 'arena',
+            topicId: 'basics',
+            level: 'basic',
+            qIndex: 0,
+            score: 0,
+            streak: 0,
+            bestStreak: 0,
+            highScore: 0,
+            health: 100,
+            timeLeft: 24,
+            answeredCurrent: false,
+            selectedOption: null,
+            totalAttempts: 0,
+            totalCorrect: 0,
+            masteredIds: [],
+            soundEnabled: true
+        };
+
+        let appState = loadState();
+        let timerInterval = null;
+        let audioCtx = null;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                const parsed = raw ? { ...defaultState, ...JSON.parse(raw) } : { ...defaultState };
+                if (!['arena', 'bank'].includes(parsed.tab)) parsed.tab = 'arena';
+                if (!TOPICS.some((t) => t.id === parsed.topicId)) parsed.topicId = 'basics';
+                if (!LEVELS.includes(parsed.level)) parsed.level = 'basic';
+                return parsed;
+            } catch {
+                return { ...defaultState };
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch {
+                // Ignore storage quota/restriction errors
+            }
+        }
+
+        // --- THEME & SOUND ---
+        function applyTheme() {
+            const htmlEl = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const label = document.getElementById('theme-label');
+
+            if (appState.theme === 'dark') {
+                htmlEl.classList.add('dark');
+                icon.textContent = '☀️';
+                label.textContent = 'Light Mode';
+            } else {
+                htmlEl.classList.remove('dark');
+                icon.textContent = '🌙';
+                label.textContent = 'Dark Mode';
+            }
+        }
+
+        function toggleTheme() {
+            appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+            saveState();
+            applyTheme();
+        }
+
+        function playTone(freq, duration = 0.12, type = 'sine', gainVal = 0.11) {
+            if (!appState.soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    audioCtx = new AudioContextClass();
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch {
+                // Ignore audio errors
+            }
+        }
+
+        function playCorrectSfx() {
+            playTone(587.33, 0.1, 'triangle', 0.13);
+            setTimeout(() => playTone(880, 0.16, 'sine', 0.13), 85);
+        }
+
+        function playWrongSfx() {
+            playTone(210, 0.15, 'sawtooth', 0.12);
+            setTimeout(() => playTone(145, 0.22, 'sawtooth', 0.12), 115);
+        }
+
+        function toggleSound() {
+            appState.soundEnabled = !appState.soundEnabled;
+            saveState();
+            document.getElementById('sound-icon').textContent = appState.soundEnabled ? '🔊' : '🔇';
+            if (appState.soundEnabled) playTone(660, 0.09, 'sine', 0.08);
+        }
+
+        // --- CUSTOM MODAL ---
+        function showModal({ icon = '🔒', title, message, confirmText = 'Got It', cancelText = null, onConfirm = null }) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-icon').textContent = icon;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+
+            const actions = document.getElementById('modal-actions');
+            actions.innerHTML = '';
+
+            if (cancelText) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'gh-box px-4 py-2 rounded-lg text-xs sm:text-sm font-mono font-semibold cursor-pointer';
+                cancelBtn.textContent = cancelText;
+                cancelBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                };
+                actions.appendChild(cancelBtn);
+            }
+
+            const okBtn = document.createElement('button');
+            okBtn.className = 'px-4 py-2 rounded-lg bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs sm:text-sm font-mono font-bold cursor-pointer';
+            okBtn.textContent = confirmText;
+            okBtn.onclick = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+            actions.appendChild(okBtn);
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function confirmResetProgress() {
+            showModal({
+                icon: '⚠️',
+                title: 'Reset All Git Progress?',
+                message: 'This clears your score, streak, accuracy stats, mastered questions, and re-locks Intermediate & Advanced tiers.',
+                confirmText: 'Reset Progress',
+                cancelText: 'Cancel',
+                onConfirm: () => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    const currentTheme = appState.theme;
+                    appState = { ...defaultState, theme: currentTheme };
+                    saveState();
+                    renderAll();
+                    if (appState.tab === 'arena') startQuestionTimer();
+                }
+            });
+        }
+
+        // --- TAB, TOPIC & STRICT SEQUENTIAL LEVEL CONTROLS ---
+        function switchTab(tabName) {
+            if (!['arena', 'bank'].includes(tabName)) return;
+            appState.tab = tabName;
+            enforceUnlockedLevelForTopic(appState.topicId);
+            saveState();
+
+            ['arena', 'bank'].forEach((t) => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                const isActive = t === tabName;
+
+                if (view) view.classList.toggle('hidden', !isActive);
+                if (btn) {
+                    btn.className = isActive
+                        ? 'repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-[#fd8c73] dark:border-[#f78166] flex items-center gap-2 whitespace-nowrap cursor-pointer'
+                        : 'repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent gh-muted hover:opacity-90 flex items-center gap-2 whitespace-nowrap cursor-pointer';
+                }
+            });
+
+            clearInterval(timerInterval);
+            if (tabName === 'arena') {
+                renderArenaHeader();
+                renderArenaQuestion();
+                startQuestionTimer();
+            } else if (tabName === 'bank') {
+                renderQuestionBank();
+            }
+        }
+
+        function selectTopic(topicId) {
+            appState.topicId = topicId;
+            enforceUnlockedLevelForTopic(topicId);
+            appState.qIndex = 0;
+            appState.answeredCurrent = false;
+            appState.selectedOption = null;
+            appState.health = 100;
+            saveState();
+            renderAll();
+            if (appState.tab === 'arena') startQuestionTimer();
+        }
+
+        function selectLevel(level) {
+            if (!LEVELS.includes(level)) return;
+
+            if (!isLevelUnlocked(appState.topicId, level)) {
+                playWrongSfx();
+                showModal({
+                    icon: '🔒',
+                    title: `${level.charAt(0).toUpperCase() + level.slice(1)} Tier Locked`,
+                    message: getLockReason(appState.topicId, level),
+                    confirmText: 'Stay on Current Tier'
+                });
+                return;
+            }
+
+            if (appState.level === level) return;
+            appState.level = level;
+            appState.qIndex = 0;
+            appState.answeredCurrent = false;
+            appState.selectedOption = null;
+            appState.health = 100;
+            saveState();
+            renderAll();
+            if (appState.tab === 'arena') startQuestionTimer();
+        }
+
+        function getCurrentQuestions() {
+            enforceUnlockedLevelForTopic(appState.topicId);
+            return QUESTION_BANK[appState.topicId][appState.level];
+        }
+
+        function getCurrentTopicObj() {
+            return TOPICS.find((t) => t.id === appState.topicId) || TOPICS[0];
+        }
+
+        // --- QUIZ ENGINE ---
+        function getLevelSeconds() {
+            if (appState.level === 'basic') return 24;
+            if (appState.level === 'intermediate') return 18;
+            return 14;
+        }
+
+        function startQuestionTimer() {
+            clearInterval(timerInterval);
+            if (appState.tab !== 'arena' || appState.answeredCurrent) return;
+
+            appState.timeLeft = getLevelSeconds();
+            document.getElementById('arena-timer').textContent = `${appState.timeLeft}s`;
+
+            timerInterval = setInterval(() => {
+                if (appState.answeredCurrent || appState.tab !== 'arena') {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                appState.timeLeft -= 1;
+                const timerEl = document.getElementById('arena-timer');
+                timerEl.textContent = `${Math.max(0, appState.timeLeft)}s`;
+
+                if (appState.timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleAnswer(-1, true);
+                }
+            }, 1000);
+        }
+
+        function handleAnswer(optionIndex, timedOut = false) {
+            if (appState.answeredCurrent) return;
+            clearInterval(timerInterval);
+
+            const q = getCurrentQuestions()[appState.qIndex];
+            const isCorrect = !timedOut && optionIndex === q.ans;
+
+            appState.answeredCurrent = true;
+            appState.selectedOption = optionIndex;
+            appState.totalAttempts += 1;
+
+            const card = document.getElementById('question-card');
+            const expBox = document.getElementById('explanation-box');
+            const fbTitle = document.getElementById('feedback-title');
+            const expText = document.getElementById('explanation-text');
+            const runner = document.getElementById('runner-avatar');
+            const runnerStatus = document.getElementById('runner-status');
+
+            let newlyUnlockedTier = null;
+
+            if (isCorrect) {
+                appState.totalCorrect += 1;
+                appState.streak += 1;
+                if (appState.streak > appState.bestStreak) appState.bestStreak = appState.streak;
+
+                const mult = Math.min(5, 1 + Math.floor(appState.streak / 3));
+                const gained = (100 + Math.max(10, appState.timeLeft * 5)) * mult;
+                appState.score += gained;
+                if (appState.score > appState.highScore) appState.highScore = appState.score;
+                appState.health = Math.min(100, appState.health + 8);
+
+                const wasInterUnlocked = isLevelUnlocked(appState.topicId, 'intermediate');
+                const wasAdvUnlocked = isLevelUnlocked(appState.topicId, 'advanced');
+
+                if (!appState.masteredIds.includes(q.id)) {
+                    appState.masteredIds.push(q.id);
+                }
+
+                const nowInterUnlocked = isLevelUnlocked(appState.topicId, 'intermediate');
+                const nowAdvUnlocked = isLevelUnlocked(appState.topicId, 'advanced');
+
+                if (!wasInterUnlocked && nowInterUnlocked) {
+                    newlyUnlockedTier = 'Intermediate';
+                } else if (!wasAdvUnlocked && nowAdvUnlocked) {
+                    newlyUnlockedTier = 'Advanced';
+                }
+
+                playCorrectSfx();
+                expBox.className = 'rounded-xl p-4 border animate-pop-in space-y-2.5 bg-[#dafbe1] dark:bg-[#2ea043]/15 border-[#1a7f37]/40';
+                fbTitle.className = 'font-mono font-extrabold text-xs sm:text-sm text-[#1a7f37] dark:text-[#3fb950]';
+                fbTitle.textContent = `✅ COMMIT VERIFIED (+${gained} PTS • ${mult}x STREAK)`;
+                runner.style.transform = 'translateX(20px)';
+                runnerStatus.textContent = 'PR checks passed!';
+            } else {
+                appState.streak = 0;
+                appState.health = Math.max(0, appState.health - 22);
+                playWrongSfx();
+
+                card.classList.remove('animate-shake');
+                void card.offsetWidth;
+                card.classList.add('animate-shake');
+
+                expBox.className = 'rounded-xl p-4 border animate-pop-in space-y-2.5 bg-[#ffebe9] dark:bg-[#f85149]/15 border-[#cf222e]/40';
+                fbTitle.className = 'font-mono font-extrabold text-xs sm:text-sm text-[#cf222e] dark:text-[#f85149]';
+                fbTitle.textContent = timedOut
+                    ? '⏱️ TIMEOUT (-22% Repo Integrity)'
+                    : '❌ CI CHECK FAILED (-22% Repo Integrity)';
+                runner.style.transform = 'translateX(-6px)';
+                runnerStatus.textContent = 'Conflict / check failure!';
+            }
+
+            expText.textContent = `Answer: [${String.fromCharCode(65 + q.ans)}] ${q.opts[q.ans]} — ${q.exp}`;
+            expBox.classList.remove('hidden');
+
+            saveState();
+            renderLevelAndTopicBar();
+            renderStatsStrip();
+            renderArenaHeader();
+            renderQuestionOptions(q);
+
+            if (appState.health <= 0) {
+                setTimeout(() => {
+                    showModal({
+                        icon: '💥',
+                        title: 'Repo Integrity Depleted (0%)',
+                        message: `Current score: ${appState.score}. Integrity will be restored so you can continue the run.`,
+                        confirmText: 'Restore Repo',
+                        onConfirm: () => {
+                            appState.health = 100;
+                            appState.streak = 0;
+                            saveState();
+                            nextQuestion();
+                        }
+                    });
+                }, 380);
+            } else if (newlyUnlockedTier) {
+                setTimeout(() => {
+                    showModal({
+                        icon: '🔓',
+                        title: `${newlyUnlockedTier} Tier Unlocked!`,
+                        message: `You mastered all 20 questions in ${getCurrentTopicObj().name}. ${newlyUnlockedTier} is now unlocked in the level selector.`,
+                        confirmText: `Switch to ${newlyUnlockedTier}`,
+                        cancelText: 'Stay Here',
+                        onConfirm: () => {
+                            selectLevel(newlyUnlockedTier.toLowerCase());
+                        }
+                    });
+                }, 350);
+            }
+        }
+
+        function nextQuestion() {
+            const questions = getCurrentQuestions();
+            appState.answeredCurrent = false;
+            appState.selectedOption = null;
+
+            if (appState.qIndex + 1 < questions.length) {
+                appState.qIndex += 1;
+            } else {
+                appState.qIndex = 0;
+                const nextTier = appState.level === 'basic' && isLevelUnlocked(appState.topicId, 'intermediate')
+                    ? 'Intermediate'
+                    : appState.level === 'intermediate' && isLevelUnlocked(appState.topicId, 'advanced')
+                        ? 'Advanced'
+                        : null;
+
+                showModal({
+                    icon: '🏆',
+                    title: 'Tier Round Complete!',
+                    message: nextTier
+                        ? `Completed all 20 questions in ${getCurrentTopicObj().name} (${appState.level.toUpperCase()}). ${nextTier} is unlocked!`
+                        : `Completed all 20 questions in ${getCurrentTopicObj().name} (${appState.level.toUpperCase()}). Master any remaining unmastered questions to unlock higher tiers.`,
+                    confirmText: 'Continue'
+                });
+            }
+
+            document.getElementById('runner-avatar').style.transform = 'translateX(0px)';
+            document.getElementById('runner-status').textContent = 'Committing changes...';
+
+            saveState();
+            renderArenaHeader();
+            renderArenaQuestion();
+            startQuestionTimer();
+        }
+
+        // --- RENDERING ---
+        function renderLevelAndTopicBar() {
+            enforceUnlockedLevelForTopic(appState.topicId);
+
+            LEVELS.forEach((lvl) => {
+                const btn = document.getElementById(`lvl-btn-${lvl}`);
+                const iconEl = document.getElementById(`lvl-icon-${lvl}`);
+                const progEl = document.getElementById(`lvl-prog-${lvl}`);
+                const unlocked = isLevelUnlocked(appState.topicId, lvl);
+                const isSelected = appState.level === lvl && unlocked;
+                const count = getTierMasteredCount(appState.topicId, lvl);
+
+                progEl.textContent = `${count}/${QUESTIONS_PER_TIER}`;
+
+                if (!unlocked) {
+                    iconEl.textContent = '🔒';
+                    btn.setAttribute('aria-disabled', 'true');
+                    btn.title = getLockReason(appState.topicId, lvl);
+                    btn.className = 'level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold opacity-55 cursor-not-allowed flex items-center gap-1.5';
+                } else {
+                    iconEl.textContent = lvl === 'basic' ? '🟢' : lvl === 'intermediate' ? '🟡' : '🔴';
+                    btn.removeAttribute('aria-disabled');
+                    btn.title = `${lvl.toUpperCase()} unlocked (${count}/${QUESTIONS_PER_TIER} mastered)`;
+                    btn.className = isSelected
+                        ? 'level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold bg-[#0969da] dark:bg-[#1f6feb] text-white cursor-pointer flex items-center gap-1.5'
+                        : 'level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold gh-muted hover:opacity-90 cursor-pointer flex items-center gap-1.5';
+                }
+            });
+
+            const gateStatus = document.getElementById('level-gate-status');
+            if (!isLevelUnlocked(appState.topicId, 'intermediate')) {
+                const basicDone = getTierMasteredCount(appState.topicId, 'basic');
+                gateStatus.textContent = `Basic (${basicDone}/${QUESTIONS_PER_TIER}) active • Intermediate & Advanced locked until Basic is 20/20 mastered.`;
+            } else if (!isLevelUnlocked(appState.topicId, 'advanced')) {
+                const interDone = getTierMasteredCount(appState.topicId, 'intermediate');
+                gateStatus.textContent = `Basic (20/20 ✓) & Intermediate (${interDone}/${QUESTIONS_PER_TIER}) unlocked • Advanced unlocks at 20/20 Intermediate.`;
+            } else {
+                const advDone = getTierMasteredCount(appState.topicId, 'advanced');
+                gateStatus.textContent = `All 3 tiers unlocked for ${getCurrentTopicObj().name} • Advanced mastered: ${advDone}/${QUESTIONS_PER_TIER}.`;
+            }
+
+            const container = document.getElementById('topic-pills');
+            container.innerHTML = '';
+
+            TOPICS.forEach((t) => {
+                const isActive = t.id === appState.topicId;
+                const topicMastered = LEVELS.reduce((acc, l) => acc + getTierMasteredCount(t.id, l), 0);
+                const interOpen = isLevelUnlocked(t.id, 'intermediate');
+                const advOpen = isLevelUnlocked(t.id, 'advanced');
+                const tierBadge = advOpen ? '🔴' : interOpen ? '🟡' : '🟢';
+
+                const btn = document.createElement('button');
+                btn.onclick = () => selectTopic(t.id);
+                btn.className = isActive
+                    ? 'text-left p-2.5 rounded-lg border-2 border-[#0969da] dark:border-[#58a6ff] bg-[#ddf4ff]/60 dark:bg-[#388bfd]/15 cursor-pointer'
+                    : 'text-left p-2.5 rounded-lg gh-box hover:opacity-95 cursor-pointer';
+
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between text-xs font-mono">
+                        <span>${t.icon} ${tierBadge}</span>
+                        <span class="gh-muted">${topicMastered}/60</span>
+                    </div>
+                    <div class="text-xs font-bold mt-1 truncate">${escapeHtml(t.short)}</div>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function renderArenaHeader() {
+            const topic = getCurrentTopicObj();
+            const questions = getCurrentQuestions();
+
+            document.getElementById('arena-badge').textContent = `${appState.level.toUpperCase()} • ${topic.name.toUpperCase()}`;
+            document.getElementById('arena-q-counter').textContent = `Question ${appState.qIndex + 1} / ${questions.length}`;
+            document.getElementById('arena-score').textContent = appState.score.toLocaleString();
+            document.getElementById('arena-streak').textContent = `${appState.streak}x`;
+            document.getElementById('arena-health-text').textContent = `${appState.health}%`;
+            document.getElementById('arena-health-bar').style.width = `${appState.health}%`;
+
+            const pct = Math.round(((appState.qIndex + (appState.answeredCurrent ? 1 : 0)) / questions.length) * 100);
+            document.getElementById('rollout-pct').textContent = `${pct}%`;
+        }
+
+        function renderQuestionOptions(q) {
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+
+            q.opts.forEach((opt, idx) => {
+                const letter = String.fromCharCode(65 + idx);
+                const btn = document.createElement('button');
+                btn.disabled = appState.answeredCurrent;
+
+                let cls = 'gh-box hover:border-[#0969da] dark:hover:border-[#58a6ff] cursor-pointer';
+                let badgeCls = 'gh-subtle border gh-divider text-[#0969da] dark:text-[#58a6ff]';
+
+                if (appState.answeredCurrent) {
+                    if (idx === q.ans) {
+                        cls = 'bg-[#dafbe1] dark:bg-[#2ea043]/20 border-[#1a7f37] text-[#1a7f37] dark:text-[#3fb950] font-semibold';
+                        badgeCls = 'bg-[#1a7f37] text-white border-[#1a7f37]';
+                    } else if (idx === appState.selectedOption && idx !== q.ans) {
+                        cls = 'bg-[#ffebe9] dark:bg-[#f85149]/20 border-[#cf222e] text-[#cf222e] dark:text-[#f85149]';
+                        badgeCls = 'bg-[#cf222e] text-white border-[#cf222e]';
+                    } else {
+                        cls = 'gh-box opacity-55';
+                    }
+                }
+
+                btn.className = `w-full text-left p-3.5 rounded-xl border transition flex items-start gap-3 ${cls}`;
+                btn.onclick = () => handleAnswer(idx, false);
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-md border font-mono text-xs font-bold flex items-center justify-center shrink-0 ${badgeCls}">${letter}</span>
+                    <span class="font-mono text-xs sm:text-sm leading-relaxed break-words">${escapeHtml(opt)}</span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderArenaQuestion() {
+            const q = getCurrentQuestions()[appState.qIndex];
+            document.getElementById('q-id-pill').textContent = q.id;
+            document.getElementById('q-tag-pill').textContent = q.tag;
+            document.getElementById('question-text').textContent = q.q;
+
+            const masteredBadge = document.getElementById('q-mastered-badge');
+            masteredBadge.classList.toggle('hidden', !appState.masteredIds.includes(q.id));
+
+            if (!appState.answeredCurrent) {
+                document.getElementById('explanation-box').classList.add('hidden');
+            }
+            renderQuestionOptions(q);
+        }
+
+        function renderQuestionBank() {
+            const topic = getCurrentTopicObj();
+            const listEl = document.getElementById('bank-list');
+            listEl.innerHTML = '';
+
+            if (!isLevelUnlocked(appState.topicId, appState.level)) {
+                document.getElementById('bank-heading').textContent =
+                    `Question Bank — ${topic.name} (${appState.level.toUpperCase()} — LOCKED)`;
+                document.getElementById('bank-subtext').textContent = getLockReason(appState.topicId, appState.level);
+
+                listEl.innerHTML = `
+                    <div class="gh-box rounded-xl p-6 text-center space-y-3">
+                        <div class="text-3xl">🔒</div>
+                        <h3 class="text-base font-bold">Tier Locked — Complete Prerequisites First</h3>
+                        <p class="text-xs sm:text-sm font-mono gh-muted max-w-xl mx-auto">${escapeHtml(getLockReason(appState.topicId, appState.level))}</p>
+                        <button onclick="selectLevel('basic')" class="px-4 py-2 rounded-lg bg-[#0969da] dark:bg-[#1f6feb] text-white font-mono text-xs font-bold cursor-pointer">
+                            Go to Unlocked Basic Tier
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const questions = QUESTION_BANK[appState.topicId][appState.level];
+            const query = (document.getElementById('bank-search')?.value || '').trim().toLowerCase();
+
+            document.getElementById('bank-heading').textContent =
+                `Question Bank — ${topic.name} (${appState.level.toUpperCase()})`;
+            document.getElementById('bank-subtext').textContent =
+                `All ${questions.length} questions, answers, and Git explanations for ${topic.name} (${appState.level.toUpperCase()}).`;
+
+            const filtered = questions.filter((item) => {
+                if (!query) return true;
+                return (
+                    item.q.toLowerCase().includes(query) ||
+                    item.exp.toLowerCase().includes(query) ||
+                    item.opts.some((o) => o.toLowerCase().includes(query))
+                );
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="gh-box rounded-xl p-6 text-center text-sm font-mono gh-muted">No matching Git questions found.</div>`;
+                return;
+            }
+
+            filtered.forEach((item) => {
+                const done = appState.masteredIds.includes(item.id);
+                const card = document.createElement('div');
+                card.className = 'gh-box rounded-xl p-4 space-y-2.5';
+
+                const optsHtml = item.opts
+                    .map((opt, i) => {
+                        const right = i === item.ans;
+                        return `
+                            <div class="px-3 py-1.5 rounded-lg font-mono text-xs flex items-center gap-2 border ${
+                                right
+                                    ? 'bg-[#dafbe1] dark:bg-[#2ea043]/15 border-[#1a7f37]/40 text-[#1a7f37] dark:text-[#3fb950] font-bold'
+                                    : 'gh-subtle gh-divider'
+                            }">
+                                <span>${right ? '✓' : String.fromCharCode(65 + i)}</span>
+                                <span>${escapeHtml(opt)}</span>
+                            </div>
+                        `;
+                    })
+                    .join('');
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 text-xs font-mono">
+                        <span class="font-bold text-[#0969da] dark:text-[#58a6ff]">${item.id} • ${escapeHtml(item.tag)}</span>
+                        <span class="px-2 py-0.5 rounded-full ${done ? 'bg-[#dafbe1] dark:bg-[#2ea043]/20 text-[#1a7f37] dark:text-[#3fb950]' : 'gh-subtle gh-muted border gh-divider'}">
+                            ${done ? 'Mastered' : 'Pending'}
+                        </span>
+                    </div>
+                    <p class="font-bold text-sm sm:text-base">${escapeHtml(item.q)}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${optsHtml}</div>
+                    <p class="text-xs font-mono gh-subtle border gh-divider rounded-lg p-2.5 gh-muted">${escapeHtml(item.exp)}</p>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        function renderStatsStrip() {
+            document.getElementById('strip-high-score').textContent = appState.highScore.toLocaleString();
+            document.getElementById('strip-mastered').textContent = `${appState.masteredIds.length}/420`;
+            document.getElementById('strip-best-streak').textContent = `${appState.bestStreak}x`;
+            const acc = appState.totalAttempts > 0
+                ? Math.round((appState.totalCorrect / appState.totalAttempts) * 100)
+                : 0;
+            document.getElementById('strip-accuracy').textContent = `${acc}%`;
+        }
+
+        function renderAll() {
+            applyTheme();
+            document.getElementById('sound-icon').textContent = appState.soundEnabled ? '🔊' : '🔇';
+            renderStatsStrip();
+            renderLevelAndTopicBar();
+            renderArenaHeader();
+            renderArenaQuestion();
+            if (appState.tab === 'bank') renderQuestionBank();
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // --- KEYBOARD SHORTCUTS ---
+        window.addEventListener('keydown', (e) => {
+            if (!document.getElementById('custom-modal').classList.contains('hidden')) {
+                if (e.key === 'Escape') {
+                    document.getElementById('custom-modal').classList.add('hidden');
+                    document.getElementById('custom-modal').classList.remove('flex');
+                }
+                return;
+            }
+            if (appState.tab !== 'arena') return;
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+
+            const key = e.key.toLowerCase();
+            const map = { '1': 0, 'a': 0, '2': 1, 'b': 1, '3': 2, 'c': 2, '4': 3, 'd': 3 };
+
+            if (!appState.answeredCurrent && key in map) {
+                e.preventDefault();
+                handleAnswer(map[key], false);
+            } else if (appState.answeredCurrent && key === 'enter') {
+                e.preventDefault();
+                nextQuestion();
+            }
+        });
+
+        // --- BOOTSTRAP ---
+        switchTab(appState.tab || 'arena');
+        renderAll();
+    </script>
+</body>
+</html>
