@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shivprasad_Suryakar/Git-Ops-Arena — Git Ops Arena</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+        // Configure Tailwind CSS to use class-based dark mode and custom Git/DevOps motion tokens
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    },
+                    animation: {
+                        'shake': 'shake 0.42s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.97) translateY(6px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* GitHub-inspired Light & Dark Theme Tokens */
+        :root {
+            --gh-bg: #ffffff;
+            --gh-canvas: #f6f8fa;
+            --gh-surface: #ffffff;
+            --gh-surface-subtle: #f6f8fa;
+            --gh-surface-hover: #eff2f5;
+            --gh-border: #d0d7de;
+            --gh-border-muted: #d8dee4;
+            --gh-text: #1f2328;
+            --gh-text-muted: #59636e;
+            --gh-accent: #0969da;
+            --gh-accent-bg: #ddf4ff;
+            --gh-success: #1a7f37;
+            --gh-success-bg: #dafbe1;
+            --gh-danger: #cf222e;
+            --gh-danger-bg: #ffebe9;
+            --gh-warn: #9a6700;
+            --gh-warn-bg: #fff8c5;
+            --gh-done: #8250df;
+            --gh-done-bg: #fbefff;
+        }
+
+        html.dark {
+            --gh-bg: #0d1117;
+            --gh-canvas: #010409;
+            --gh-surface: #161b22;
+            --gh-surface-subtle: #0d1117;
+            --gh-surface-hover: #21262d;
+            --gh-border: #30363d;
+            --gh-border-muted: #21262d;
+            --gh-text: #e6edf3;
+            --gh-text-muted: #8b949e;
+            --gh-accent: #2f81f7;
+            --gh-accent-bg: rgba(56, 139, 253, 0.15);
+            --gh-success: #3fb950;
+            --gh-success-bg: rgba(46, 160, 67, 0.15);
+            --gh-danger: #f85149;
+            --gh-danger-bg: rgba(248, 81, 73, 0.15);
+            --gh-warn: #d29922;
+            --gh-warn-bg: rgba(187, 128, 9, 0.15);
+            --gh-done: #a371f7;
+            --gh-done-bg: rgba(163, 113, 247, 0.15);
+        }
+
+        body {
+            background-color: var(--gh-bg);
+            color: var(--gh-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .gh-box {
+            background-color: var(--gh-surface);
+            border: 1px solid var(--gh-border);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .gh-subtle {
+            background-color: var(--gh-surface-subtle);
+            border-color: var(--gh-border);
+        }
+
+        .gh-muted {
+            color: var(--gh-text-muted);
+        }
+
+        .gh-divider {
+            border-color: var(--gh-border);
+        }
+
+        .lane-track {
+            background-color: var(--gh-surface-subtle);
+            border: 1px solid var(--gh-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lane-pulse {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 96px;
+            background: linear-gradient(90deg, transparent, rgba(47, 129, 247, 0.24), transparent);
+            animation: laneRush 2.5s linear infinite;
+        }
+
+        @keyframes laneRush {
+            0% { left: -100px; }
+            100% { left: 100%; }
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gh-surface-subtle);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gh-border);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- GITHUB-STYLE TOP REPOSITORY HEADER & TWO NAVIGATION TABS (ARENA RUN + QUESTION BANK ONLY) -->
+    <header class="gh-subtle border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-3.5">
+            <!-- Repo Breadcrumb & Utility Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <!-- Git Repository Icon -->
+                    <svg class="w-4 h-4 gh-muted shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
+                    </svg>
+                    <span class="text-base sm:text-lg font-semibold text-[#0969da] dark:text-[#58a6ff]">
+                        Shivprasad_Suryakar
+                    </span>
+                    <span class="gh-muted font-mono">/</span>
+                    <span class="text-base sm:text-lg font-bold tracking-tight">
+                        Git-Ops-Arena
+                    </span>
+                    <span class="px-2 py-0.5 text-xs font-medium rounded-full border gh-divider gh-muted">
+                        Public
+                    </span>
+                    <span class="hidden sm:inline-flex px-2 py-0.5 text-xs font-mono rounded-full bg-[#ddf4ff] dark:bg-[#388bfd]/15 text-[#0969da] dark:text-[#58a6ff] border border-[#54aeff]/40">
+                        420 Git Qs
+                    </span>
+                </div>
+
+                <!-- Right Utility Controls: Auto-Save Badge, Theme Switcher, Restart Tier, Sound, Reset -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span id="autosave-badge" class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-[#dafbe1] dark:bg-[#2ea043]/15 text-[#1a7f37] dark:text-[#3fb950] border border-[#1a7f37]/30 flex items-center gap-1.5" title="Checkpoint progress is automatically saved in localStorage">
+                        <span id="autosave-dot">💾</span>
+                        <span id="autosave-text">Auto-Save Ready</span>
+                    </span>
+                    <button id="btn-theme" onclick="toggleTheme()" class="gh-box px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 cursor-pointer" title="Switch Light / Dark Theme">
+                        <span id="theme-icon">☀️</span>
+                        <span id="theme-label">Light Mode</span>
+                    </button>
+                    <button onclick="confirmRestartCurrentTier()" class="gh-box px-2.5 py-1.5 rounded-md text-xs font-mono font-semibold hover:opacity-90 cursor-pointer" title="Restart current topic and tier from Question 1">
+                        ↻ Restart Tier
+                    </button>
+                    <button id="btn-sound" onclick="toggleSound()" class="gh-box px-2.5 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1 hover:opacity-90 cursor-pointer" title="Toggle Web Audio Sound FX">
+                        <span id="sound-icon">🔊</span>
+                        <span class="hidden md:inline font-mono">SFX</span>
+                    </button>
+                    <button onclick="confirmResetProgress()" class="gh-box px-2.5 py-1.5 rounded-md text-xs font-mono font-semibold text-[#cf222e] dark:text-[#f85149] hover:opacity-90 cursor-pointer" title="Reset All Local Progress & Locks">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Strictly Two Navigation Tabs: Arena Run & Question Bank -->
+            <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar -mb-px" aria-label="Primary Modes">
+                <button id="tab-arena" onclick="switchTab('arena')" class="repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-[#fd8c73] dark:border-[#f78166] flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <span>⚡</span>
+                    <span>Arena Run</span>
+                    <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-full bg-[#dafbe1] dark:bg-[#2ea043]/20 text-[#1a7f37] dark:text-[#3fb950]">Live</span>
+                </button>
+                <button id="tab-bank" onclick="switchTab('bank')" class="repo-tab px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent gh-muted hover:opacity-90 flex items-center gap-2 whitespace-nowrap cursor-pointer">
+                    <span>📚</span>
+                    <span>Question Bank</span>
+                    <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-full gh-subtle border gh-divider">420</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- Learner Stats Summary Strip -->
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="gh-box rounded-xl p-3.5 font-mono">
+                <div class="text-[11px] gh-muted">HIGH SCORE</div>
+                <div id="stat-high-score" class="text-lg font-extrabold text-[#0969da] dark:text-[#58a6ff] mt-0.5">0</div>
+            </div>
+            <div class="gh-box rounded-xl p-3.5 font-mono">
+                <div class="text-[11px] gh-muted">MASTERED BANK</div>
+                <div id="stat-mastered" class="text-lg font-extrabold text-[#1a7f37] dark:text-[#3fb950] mt-0.5">0/420</div>
+            </div>
+            <div class="gh-box rounded-xl p-3.5 font-mono">
+                <div class="text-[11px] gh-muted">BEST STREAK</div>
+                <div id="stat-best-streak" class="text-lg font-extrabold text-[#8250df] dark:text-[#a371f7] mt-0.5">0x</div>
+            </div>
+            <div class="gh-box rounded-xl p-3.5 font-mono">
+                <div class="text-[11px] gh-muted">ACCURACY</div>
+                <div id="stat-accuracy" class="text-lg font-extrabold text-[#9a6700] dark:text-[#d29922] mt-0.5">0%</div>
+            </div>
+        </section>
+
+        <!-- Shared Git Domain & Sequential Difficulty Level Selector -->
+        <section id="shared-selector-bar" class="gh-box rounded-xl p-4 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#0969da] dark:text-[#58a6ff]">
+                            Domain &amp; Sequential Tier
+                        </span>
+                        <span class="text-xs gh-muted font-mono">• 20 Qs / Tier • 60 / Topic • 420 Total</span>
+                    </div>
+                    <p id="tier-unlock-hint" class="text-xs font-mono gh-muted">
+                        Complete Basic in a topic to unlock Intermediate; complete Intermediate to unlock Advanced.
+                    </p>
+                </div>
+
+                <!-- Sequential Difficulty Tier Controls (Basic -> Intermediate -> Advanced) -->
+                <div id="level-controls" class="inline-flex items-center p-1 rounded-lg gh-subtle border gh-divider self-start lg:self-auto gap-1">
+                    <button data-level="basic" onclick="selectLevel('basic')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span id="lvl-lock-basic">🟢</span>
+                        <span>Basic</span>
+                    </button>
+                    <button data-level="intermediate" onclick="selectLevel('intermediate')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span id="lvl-lock-intermediate">🔒</span>
+                        <span>Intermediate</span>
+                    </button>
+                    <button data-level="advanced" onclick="selectLevel('advanced')" class="level-btn px-3 py-1.5 rounded-md text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span id="lvl-lock-advanced">🔒</span>
+                        <span>Advanced</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 7 Git Topic Cards (BAS, BRN, MRG, HST, RMT, STG, WRK) -->
+            <div id="topic-pills" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2"></div>
+        </section>
+
+        <!-- TAB 1: ARENA RUN (TIMED GIT SPEED-RUN ENGINE) -->
+        <section id="view-arena" class="space-y-5">
+            <!-- Telemetry & Commit Runner Track -->
+            <div class="gh-box rounded-xl p-4 space-y-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <span id="arena-badge" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#ddf4ff] dark:bg-[#388bfd]/15 text-[#0969da] dark:text-[#58a6ff] border border-[#54aeff]/40">
+                            BASIC • GIT BASICS
+                        </span>
+                        <span id="arena-q-counter" class="text-xs sm:text-sm font-mono gh-muted">
+                            Question 1 / 20
+                        </span>
+                        <span id="checkpoint-resume-pill" class="hidden px-2 py-0.5 rounded-md text-[11px] font-mono bg-[#fbefff] dark:bg-[#a371f7]/15 text-[#8250df] dark:text-[#a371f7] border border-[#8250df]/30">
+                            Resumed from saved checkpoint
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-4 font-mono text-xs sm:text-sm">
+                        <div>
+                            <span class="gh-muted">SCORE:</span>
+                            <span id="arena-score" class="font-extrabold text-[#0969da] dark:text-[#58a6ff] text-base ml-1">0</span>
+                        </div>
+                        <div>
+                            <span class="gh-muted">STREAK:</span>
+                            <span id="arena-streak" class="font-extrabold text-[#8250df] dark:text-[#a371f7] text-base ml-1">0x</span>
+                        </div>
+                        <div>
+                            <span class="gh-muted">TIMER:</span>
+                            <span id="arena-timer" class="font-extrabold text-[#9a6700] dark:text-[#d29922] text-base ml-1">24s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repo Integrity Health + Commit Runner Lane -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div class="md:col-span-4 space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="font-semibold text-[#1a7f37] dark:text-[#3fb950]">REPO INTEGRITY</span>
+                            <span id="arena-health-text" class="font-bold text-[#1a7f37] dark:text-[#3fb950]">100%</span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full gh-subtle border gh-divider overflow-hidden">
+                            <div id="arena-health-bar" class="h-full bg-[#1a7f37] dark:bg-[#3fb950] transition-all duration-300" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-8 lane-track h-10 rounded-lg flex items-center justify-between px-3.5">
+                        <div class="lane-pulse"></div>
+                        <div id="runner-avatar" class="relative z-10 flex items-center gap-2 font-mono text-xs font-bold transition-transform duration-300">
+                            <span class="px-2 py-0.5 rounded bg-[#0969da] dark:bg-[#1f6feb] text-white">
+                                🔀 HEAD-RUNNER
+                            </span>
+                            <span id="runner-status" class="gh-muted hidden sm:inline">Committing changes...</span>
+                        </div>
+                        <div class="relative z-10 font-mono text-xs gh-muted flex items-center gap-1.5">
+                            <span>🏁 TIER PROGRESS</span>
+                            <span id="rollout-pct" class="font-bold text-[#1a7f37] dark:text-[#3fb950]">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Question Card -->
+            <div id="question-card" class="gh-box rounded-xl p-5 sm:p-7 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span id="q-id-pill" class="px-2.5 py-0.5 rounded-md gh-subtle border gh-divider font-mono text-xs font-bold text-[#0969da] dark:text-[#58a6ff]">
+                            BAS-BAS-01
+                        </span>
+                        <span id="q-tag-pill" class="px-2.5 py-0.5 rounded-md bg-[#fbefff] dark:bg-[#a371f7]/15 text-[#8250df] dark:text-[#a371f7] border border-[#8250df]/30 font-mono text-xs">
+                            Repository Init
+                        </span>
+                    </div>
+                    <div class="text-xs font-mono gh-muted">
+                        Keys: <span class="font-semibold">[1-4]</span> or <span class="font-semibold">[A-D]</span> • <span class="font-semibold">[Enter]</span> next
+                    </div>
+                </div>
+
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold leading-snug">
+                    Loading Git challenge...
+                </h2>
+
+                <!-- 4 Answer Choices Grid -->
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+                <!-- Explanation & Next Action Box -->
+                <div id="explanation-box" class="hidden rounded-xl p-4 border animate-pop-in space-y-2.5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div id="feedback-title" class="font-mono font-extrabold text-xs sm:text-sm"></div>
+                        <button id="btn-next-q" onclick="nextQuestion()" class="px-4 py-1.5 rounded-lg bg-[#1f883d] hover:bg-[#1a7f37] text-white font-mono text-xs sm:text-sm font-bold cursor-pointer self-start sm:self-auto">
+                            Next Commit →
+                        </button>
+                    </div>
+                    <p id="explanation-text" class="text-xs sm:text-sm font-mono gh-subtle border rounded-lg p-3 leading-relaxed"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: QUESTION BANK BROWSER (ALL 20 Qs PER TOPIC & LEVEL) -->
+        <section id="view-bank" class="hidden space-y-4">
+            <div class="gh-box rounded-xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                    <h2 id="bank-heading" class="text-lg font-bold">
+                        Question Bank — Git Basics (BASIC)
+                    </h2>
+                    <p class="text-xs gh-muted mt-0.5">
+                        Browse all 20 curated Git questions, verified answers, and technical explanations for the selected topic &amp; tier.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <input
+                        id="bank-search"
+                        type="text"
+                        oninput="renderQuestionBank()"
+                        placeholder="Filter git commands, flags, concepts..."
+                        class="px-3 py-1.5 rounded-lg gh-subtle border gh-divider text-xs sm:text-sm font-mono focus:outline-none focus:border-[#0969da] dark:focus:border-[#58a6ff] w-full sm:w-64"
+                    />
+                    <button onclick="switchTab('arena')" class="px-3.5 py-1.5 rounded-lg bg-[#1f883d] hover:bg-[#1a7f37] text-white font-mono text-xs font-bold cursor-pointer">
+                        Run Speed-Quiz ⚡
+                    </button>
+                </div>
+            </div>
+            <div id="bank-list" class="space-y-3"></div>
+        </section>
+    </main>
+
+    <!-- CUSTOM MODAL DIALOG (NO NATIVE ALERT / CONFIRM) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/65 backdrop-blur-xs">
+        <div class="gh-box rounded-2xl max-w-md w-full p-6 space-y-4 animate-pop-in">
+            <div class="flex items-center gap-3">
+                <div id="modal-icon" class="w-11 h-11 rounded-xl gh-subtle border gh-divider flex items-center justify-center text-2xl">⚡</div>
+                <h3 id="modal-title" class="text-lg font-bold">Notice</h3>
+            </div>
+            <p id="modal-message" class="text-sm gh-muted leading-relaxed"></p>
+            <div id="modal-actions" class="flex items-center justify-end gap-2.5 pt-2"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * =====================================================================
+         * GIT OPS ARENA — SINGLE-FILE VERSION CONTROL QUIZ & CHECKPOINT ENGINE
+         * 7 Git Domains × 3 Sequential Tiers × 20 Questions = 420 Questions
+         * Sequential Unlock Rule: Basic -> Intermediate -> Advanced per topic
+         * =====================================================================
+         */
+
+        const TOPICS = [
+            { id: 'basics', name: 'Git Basics', short: 'Git Basics', code: 'BAS', icon: '🌱' },
+            { id: 'branching', name: 'Branching & Switching', short: 'Branching', code: 'BRN', icon: '🌿' },
+            { id: 'merging', name: 'Merging & Rebasing', short: 'Merge & Rebase', code: 'MRG', icon: '🔀' },
+            { id: 'history', name: 'History & Reset/Revert', short: 'History & Reset', code: 'HST', icon: '⏪' },
+            { id: 'remotes', name: 'Remotes, Fetch & Push', short: 'Remotes & Sync', code: 'RMT', icon: '☁️' },
+            { id: 'staging', name: 'Staging, Diff & Stash', short: 'Stage & Stash', code: 'STG', icon: '📦' },
+            { id: 'workflows', name: 'Workflows, Hooks & Internals', short: 'Workflows & Git', code: 'WRK', icon: '⚙️' }
+        ];
+
+        const LEVELS = ['basic', 'intermediate', 'advanced'];
+
+        const SEED_QUESTIONS = {
+            basics: {
+                basic: [
+                    { q: "Which command initializes a new local Git repository in the current directory?", opts: ["git init", "git start", "git new-repo", "git create"], ans: 0, tag: "Repository Init", exp: "`git init` creates a new `.git` directory structure to initialize version tracking." },
+                    { q: "Which command checks modified, staged, and untracked files in the working tree?", opts: ["git status", "git state", "git info", "git inspect"], ans: 0, tag: "Working Tree", exp: "`git status` shows changes in the working directory and staging area." },
+                    { q: "Which command stages all changed and new files for the next commit?", opts: ["git add .", "git stage --all", "git commit -a", "git push ."], ans: 0, tag: "Staging Area", exp: "`git add .` stages changes from the current directory into the index." },
+                    { q: "Which command records staged changes to the repository with an inline message?", opts: ["git commit -m 'init'", "git save -m 'init'", "git log -m 'init'", "git record 'init'"], ans: 0, tag: "Commits", exp: "`git commit -m '<message>'` creates a commit object pointing to the staged snapshot." },
+                    { q: "Which command sets your global commit author name in Git configuration?", opts: ["git config --global user.name 'Dev'", "git set author 'Dev'", "git identity --name 'Dev'", "git config --user 'Dev'"], ans: 0, tag: "Git Config", exp: "`git config --global user.name` configures the default author name across repositories." }
+                ],
+                intermediate: [
+                    { q: "Which command commits tracked modified files directly without running `git add` first?", opts: ["git commit -am 'fix bug'", "git commit --untracked 'fix bug'", "git add --commit 'fix bug'", "git save --tracked"], ans: 0, tag: "Commit Shortcut", exp: "`-a` stages all modified and deleted tracked files before committing (not new untracked files)." },
+                    { q: "Which file specifies patterns of files/folders Git should ignore?", opts: [".gitignore", ".gitexclude", ".ignore", ".gitconfig"], ans: 0, tag: "Ignore Rules", exp: "`.gitignore` defines glob patterns for untracked files Git should skip." },
+                    { q: "Which command lists all configured Git variables and their origin files?", opts: ["git config --list --show-origin", "git config --dump-all", "git env --git", "git status --config"], ans: 0, tag: "Config Inspection", exp: "`git config --list --show-origin` displays effective config values and where each was set." },
+                    { q: "Which command removes `secret.env` from the Git index while keeping it on disk?", opts: ["git rm --cached secret.env", "git rm --keep secret.env", "git unstage --disk secret.env", "git delete --soft secret.env"], ans: 0, tag: "Index Removal", exp: "`git rm --cached <file>` removes the file from staging/tracking while leaving the working copy intact." },
+                    { q: "What does `git clone --depth 1 <url>` create?", opts: ["A shallow clone containing only the latest commit", "A bare mirror of all branches", "A clone with submodules deleted", "A local read-only copy"], ans: 0, tag: "Shallow Clone", exp: "`--depth 1` fetches only the most recent commit history to save bandwidth and time." }
+                ],
+                advanced: [
+                    { q: "How does Git store commit snapshots internally rather than file-by-file deltas?", opts: ["Content-addressed tree and blob objects indexed by SHA hash", "SQLite binary tables", "Plain-text patch files only", "Encrypted tar archives"], ans: 0, tag: "Git Object Model", exp: "Git stores blobs (file content), trees (directories/paths), and commits as SHA-addressed objects." },
+                    { q: "What does `git commit --amend --no-edit` accomplish?", opts: ["Adds staged changes onto the last commit while keeping its commit message", "Deletes the previous commit", "Creates a new branch", "Reverts the last push"], ans: 0, tag: "Amending Commits", exp: "`--amend --no-edit` replaces `HEAD` with a new commit containing new staged changes and the existing message." },
+                    { q: "Which command creates a lightweight tag `v1.0.0` at `HEAD`?", opts: ["git tag v1.0.0", "git release v1.0.0", "git mark v1.0.0", "git label --add v1.0.0"], ans: 0, tag: "Git Tags", exp: "`git tag v1.0.0` creates a tag reference pointing to the current commit." },
+                    { q: "Which command lists all tracked files currently in the Git index?", opts: ["git ls-files", "git cat-index", "git show-tree", "git list-blobs"], ans: 0, tag: "Index Inspection", exp: "`git ls-files` prints files tracked in the staging area/index." },
+                    { q: "Why should already-pushed public commits generally NOT be amended or rebased?", opts: ["Rewriting history changes commit SHAs and disrupts collaborators on shared branches", "Git forbids pushing amended commits", "It deletes remote tags", "It corrupts `.gitignore`"], ans: 0, tag: "History Safety", exp: "Rewriting published history alters commit hashes and forces teammates to reconcile divergent histories." }
+                ]
+            },
+            branching: {
+                basic: [
+                    { q: "Which command lists all local branches and highlights the current branch with `*`?", opts: ["git branch", "git branches", "git show-branches", "git head"], ans: 0, tag: "Branch Listing", exp: "`git branch` lists local branches and marks the active branch with `*`." },
+                    { q: "Which command creates a new branch named `feature/login`?", opts: ["git branch feature/login", "git new-branch feature/login", "git mkbranch feature/login", "git fork feature/login"], ans: 0, tag: "Branch Creation", exp: "`git branch <name>` creates a new branch pointer at the current commit." },
+                    { q: "Which command switches to an existing branch named `develop`?", opts: ["git switch develop", "git move develop", "git goto develop", "git jump develop"], ans: 0, tag: "Switching Branches", exp: "`git switch <branch>` switches `HEAD` and the working tree to `<branch>`." },
+                    { q: "Which command creates and immediately switches to a new branch `hotfix/api`?", opts: ["git switch -c hotfix/api", "git branch -s hotfix/api", "git checkout --new hotfix/api", "git switch --delete hotfix/api"], ans: 0, tag: "Create & Switch", exp: "`git switch -c <branch>` (or `git checkout -b <branch>`) creates and checks out the branch." },
+                    { q: "Which command deletes a fully merged local branch `old-feature`?", opts: ["git branch -d old-feature", "git branch --purge old-feature", "git rm-branch old-feature", "git erase old-feature"], ans: 0, tag: "Safe Branch Delete", exp: "`git branch -d` deletes a branch only if it has already been merged." }
+                ],
+                intermediate: [
+                    { q: "Which command force-deletes an unmerged local branch `experiment`?", opts: ["git branch -D experiment", "git branch --force-clean experiment", "git switch -d experiment", "git reset --branch experiment"], ans: 0, tag: "Force Delete", exp: "`git branch -D` is shorthand for `--delete --force` and removes unmerged branches." },
+                    { q: "Which command renames the current branch to `main`?", opts: ["git branch -m main", "git rename-branch main", "git switch --rename main", "git move-head main"], ans: 0, tag: "Rename Branch", exp: "`git branch -m <new-name>` renames the current branch." },
+                    { q: "What does `HEAD` represent in Git?", opts: ["A pointer to the current branch or commit being worked on", "The first commit in a repository", "The remote `origin` URL", "The staged file list"], ans: 0, tag: "HEAD Pointer", exp: "`HEAD` normally points to the active local branch ref, or directly to a commit in detached HEAD state." },
+                    { q: "Which command lists local branches already merged into `main`?", opts: ["git branch --merged main", "git branch --done main", "git log --merged main", "git status --merged main"], ans: 0, tag: "Merged Branches", exp: "`git branch --merged <target>` filters branches reachable from `<target>`." },
+                    { q: "How do you restore `app.js` in the working directory to match `HEAD`?", opts: ["git checkout -- app.js", "git branch --restore app.js", "git commit --undo app.js", "git fetch --file app.js"], ans: 0, tag: "Discard Working Changes", exp: "`git checkout -- <file>` (or `git restore <file>`) discards uncommitted changes in that file." }
+                ],
+                advanced: [
+                    { q: "What is a 'detached HEAD' state in Git?", opts: ["`HEAD` points directly to a commit hash instead of a branch name", "The `.git` folder is moved outside the repo", "Remote tracking is disabled", "Working tree has merge conflicts"], ans: 0, tag: "Detached HEAD", exp: "Checking out a specific commit or tag detaches `HEAD`; new commits won't move a branch unless you create one." },
+                    { q: "How do you save work made while in detached HEAD into a new branch `fix/detached`?", opts: ["git switch -c fix/detached", "git attach fix/detached", "git commit --reattach fix/detached", "git merge --head fix/detached"], ans: 0, tag: "Recovering Detached HEAD", exp: "Running `git switch -c fix/detached` creates the branch at the current commit and attaches `HEAD` to it." },
+                    { q: "Which command checks out a branch into a separate linked working directory at `../hotfix-dir`?", opts: ["git worktree add ../hotfix-dir hotfix", "git branch --worktree ../hotfix-dir", "git clone --worktree ../hotfix-dir", "git subrepo add ../hotfix-dir"], ans: 0, tag: "Git Worktrees", exp: "`git worktree add <path> <branch>` lets you work on multiple branches simultaneously in separate folders." },
+                    { q: "Which command shows all branches containing commit `9f2c1ab`?", opts: ["git branch --contains 9f2c1ab", "git branch --has 9f2c1ab", "git tag --parent 9f2c1ab", "git log --branch 9f2c1ab"], ans: 0, tag: "Commit Reachability", exp: "`git branch --contains <commit>` lists branches that include that commit in their ancestry." },
+                    { q: "What does `git switch -` do?", opts: ["Switches back to the previously checked-out branch", "Deletes the current branch", "Unstages all files", "Lists all tags"], ans: 0, tag: "Previous Branch Shortcut", exp: "`git switch -` (like `cd -`) switches back to the prior branch." }
+                ]
+            },
+            merging: {
+                basic: [
+                    { q: "Which command merges branch `feature/auth` into your current branch?", opts: ["git merge feature/auth", "git join feature/auth", "git combine feature/auth", "git pull-branch feature/auth"], ans: 0, tag: "Git Merge", exp: "`git merge <branch>` integrates changes from `<branch>` into the active branch." },
+                    { q: "What is a 'fast-forward' merge in Git?", opts: ["Moving the branch pointer forward when target has no divergent commits", "Merging without running tests", "Squashing all commits into one", "Force-pushing over `main`"], ans: 0, tag: "Fast-Forward", exp: "When the current branch is a direct ancestor of the merged branch, Git advances the pointer directly." },
+                    { q: "Which command aborts an in-progress merge that hit conflicts?", opts: ["git merge --abort", "git merge --cancel", "git reset --merge-stop", "git conflict --clear"], ans: 0, tag: "Abort Merge", exp: "`git merge --abort` stops the merge and restores the pre-merge state." },
+                    { q: "Which command reapplies your current branch's commits on top of `main`?", opts: ["git rebase main", "git replay main", "git graft main", "git stack main"], ans: 0, tag: "Git Rebase", exp: "`git rebase main` transplants your branch commits onto the tip of `main`." },
+                    { q: "After resolving a merge conflict in `index.html`, what is the next step before committing?", opts: ["git add index.html", "git rebase --skip", "git fetch --resolve", "git diff --fix"], ans: 0, tag: "Conflict Resolution", exp: "Stage the resolved file with `git add <file>`, then complete with `git commit` or `git merge --continue`." }
+                ],
+                intermediate: [
+                    { q: "Which flag forces Git to create a merge commit even when a fast-forward is possible?", opts: ["git merge --no-ff feature/ui", "git merge --ff-only feature/ui", "git merge --no-commit feature/ui", "git merge --dry-run feature/ui"], ans: 0, tag: "No Fast-Forward", exp: "`--no-ff` preserves a dedicated merge commit showing when a feature branch was integrated." },
+                    { q: "Which command combines all changes from `feature/api` into a single unstaged change set on current branch?", opts: ["git merge --squash feature/api", "git merge --flatten feature/api", "git squash feature/api", "git rebase --one feature/api"], ans: 0, tag: "Squash Merge", exp: "`--squash` stages combined changes without creating a two-parent merge commit; you then run `git commit`." },
+                    { q: "Which command continues a rebase after fixing a conflict and staging files?", opts: ["git rebase --continue", "git rebase --resume", "git rebase --apply", "git rebase --finish"], ans: 0, tag: "Rebase Continue", exp: "`git rebase --continue` resumes replaying remaining commits during an active rebase." },
+                    { q: "Which command skips the conflicting commit during a rebase?", opts: ["git rebase --skip", "git rebase --ignore", "git rebase --drop", "git rebase --pass"], ans: 0, tag: "Rebase Skip", exp: "`git rebase --skip` drops the current commit being rebased and moves to the next." },
+                    { q: "What conflict markers appear in a file during a merge or rebase conflict?", opts: ["`<<<<<<<`, `=======`, `>>>>>>>`", "`<<<`, `===`, `>>>`", "`// START`, `// MID`, `// END`", "`[[HEAD]]`, `[[MAIN]]`"], ans: 0, tag: "Conflict Markers", exp: "Git wraps conflicting sections between `<<<<<<<`, `=======`, and `>>>>>>>` markers." }
+                ],
+                advanced: [
+                    { q: "Which command opens an interactive editor to squash, reorder, edit, or drop the last 4 commits?", opts: ["git rebase -i HEAD~4", "git log -i -n 4", "git commit --interactive 4", "git merge -i HEAD~4"], ans: 0, tag: "Interactive Rebase", exp: "`git rebase -i HEAD~4` opens an interactive todo list for the last 4 commits." },
+                    { q: "What does `git rebase --onto main develop feature` do?", opts: ["Rebases commits from `develop..feature` onto `main`", "Merges `main` and `develop` into `feature`", "Deletes `develop` branch", "Creates a tag on `main`"], ans: 0, tag: "Rebase --onto", exp: "`--onto <newbase> <upstream> <branch>` moves commits after `<upstream>` on `<branch>` onto `<newbase>`." },
+                    { q: "How does `git merge -X ours feature` behave on conflicting lines?", opts: ["Automatically favors the current branch's changes on conflicting hunks", "Keeps both versions with markers", "Favors `feature` on all files", "Fails immediately"], ans: 0, tag: "Merge Strategy Option", exp: "`-X ours` resolves conflicting hunks in favor of the current branch (`ours`)." },
+                    { q: "What does enabling `rerere` (`git config rerere.enabled true`) do?", opts: ["Records and reuses conflict resolutions for recurring conflicts", "Reverts remote tags", "Re-signs GPG commits", "Compresses packfiles"], ans: 0, tag: "Git Rerere", exp: "`rerere` (reuse recorded resolution) remembers how you resolved a conflict and replays it if seen again." },
+                    { q: "What is the key difference between `git merge` and `git rebase`?", opts: ["Merge preserves true history with a merge commit; rebase rewrites commits into a linear sequence", "Rebase deletes branches; merge keeps them", "Merge works only offline", "Rebase cannot have conflicts"], ans: 0, tag: "Merge vs Rebase", exp: "Merge keeps non-linear branch history intact; rebase creates new commits for a linear history." }
+                ]
+            },
+            history: {
+                basic: [
+                    { q: "Which command shows the commit history log?", opts: ["git log", "git history", "git commits", "git timeline"], ans: 0, tag: "Commit Log", exp: "`git log` displays commits in reverse chronological order." },
+                    { q: "Which command shows a compact one-line-per-commit log with branch/tag decorations?", opts: ["git log --oneline --graph --decorate", "git log --short-graph", "git history --compact", "git show --graph"], ans: 0, tag: "Log Graph", exp: "`--oneline --graph --decorate` visualizes commit graphs, refs, and concise messages." },
+                    { q: "Which command creates a new commit that undoes the changes of commit `a1b2c3d`?", opts: ["git revert a1b2c3d", "git undo a1b2c3d", "git rollback a1b2c3d", "git erase a1b2c3d"], ans: 0, tag: "Safe Revert", exp: "`git revert <commit>` adds a new inverse commit, making it safe for shared branches." },
+                    { q: "Which command shows details and diff patch of a specific commit `a1b2c3d`?", opts: ["git show a1b2c3d", "git inspect-commit a1b2c3d", "git cat a1b2c3d", "git trace a1b2c3d"], ans: 0, tag: "Inspect Commit", exp: "`git show <commit>` prints commit metadata and its diff." },
+                    { q: "Which command shows line-by-line author and commit info for `server.py`?", opts: ["git blame server.py", "git who server.py", "git author server.py", "git audit server.py"], ans: 0, tag: "Line Attribution", exp: "`git blame <file>` annotates each line with the commit and author that last modified it." }
+                ],
+                intermediate: [
+                    { q: "Which command moves `HEAD` back 1 commit while keeping changes staged (`--soft`)?", opts: ["git reset --soft HEAD~1", "git reset --hard HEAD~1", "git revert --soft HEAD~1", "git checkout --soft HEAD~1"], ans: 0, tag: "Soft Reset", exp: "`git reset --soft HEAD~1` moves the branch pointer back 1 commit and leaves changes in the index." },
+                    { q: "Which command resets `HEAD`, index, and working tree to `HEAD~1`, discarding local changes?", opts: ["git reset --hard HEAD~1", "git reset --soft HEAD~1", "git clean --hard HEAD~1", "git revert --hard HEAD~1"], ans: 0, tag: "Hard Reset", exp: "`git reset --hard HEAD~1` discards uncommitted index and working tree changes." },
+                    { q: "Which command copies a specific commit `7c4e91a` onto the current branch?", opts: ["git cherry-pick 7c4e91a", "git copy-commit 7c4e91a", "git graft 7c4e91a", "git pluck 7c4e91a"], ans: 0, tag: "Cherry-Pick", exp: "`git cherry-pick <commit>` applies the changes from `<commit>` as a new commit on `HEAD`." },
+                    { q: "Which command searches commit messages for the word `timeout`?", opts: ["git log --grep='timeout'", "git log --find='timeout'", "git grep --commits 'timeout'", "git blame --match 'timeout'"], ans: 0, tag: "Search Messages", exp: "`git log --grep='<pattern>'` filters commits whose messages match `<pattern>`." },
+                    { q: "Which command uses binary search to find which commit introduced a bug?", opts: ["git bisect", "git search-bug", "git binary-log", "git trace-commit"], ans: 0, tag: "Git Bisect", exp: "`git bisect` narrows down a bad commit across history using `good` and `bad` markers." }
+                ],
+                advanced: [
+                    { q: "How can you recover a commit hash that was detached or reset away recently?", opts: ["git reflog", "git fsck --purge", "git log --all-deleted", "git recover-head"], ans: 0, tag: "Git Reflog", exp: "`git reflog` logs local updates to `HEAD` and branch tips so unreachable commits can be found." },
+                    { q: "Which command searches commit history diffs (`-S`) for when string `API_KEY` was added or removed?", opts: ["git log -S 'API_KEY' -p", "git log --diff-grep 'API_KEY'", "git blame -S 'API_KEY'", "git show --search 'API_KEY'"], ans: 0, tag: "Pickaxe Search", exp: "`git log -S '<string>' -p` finds commits that change the number of occurrences of `<string>`." },
+                    { q: "What does `git revert -m 1 <merge-commit>` specify?", opts: ["Parent #1 as the mainline parent to revert back to", "Message template #1", "First author only", "First file in diff"], ans: 0, tag: "Reverting Merges", exp: "For a merge commit with multiple parents, `-m 1` selects parent 1 as the mainline." },
+                    { q: "What does `git reset --mixed HEAD~1` (the default mode) do?", opts: ["Moves `HEAD` back 1 commit and unstages changes while keeping them in working tree", "Deletes working tree files", "Creates a revert commit", "Pushes to origin"], ans: 0, tag: "Mixed Reset", exp: "`--mixed` is the default for `git reset`: updates `HEAD` and index, keeping working directory edits." },
+                    { q: "Which command removes untracked files and directories from the working tree?", opts: ["git clean -fd", "git reset --untracked", "git rm --untracked", "git purge --ignored"], ans: 0, tag: "Cleaning Untracked", exp: "`git clean -fd` removes untracked files (`-f`) and untracked directories (`-d`)." }
+                ]
+            },
+            remotes: {
+                basic: [
+                    { q: "Which command downloads remote commits/refs without merging them into your branch?", opts: ["git fetch origin", "git pull --no-index origin", "git sync origin", "git download origin"], ans: 0, tag: "Git Fetch", exp: "`git fetch origin` updates remote-tracking branches (`origin/*`) without modifying your working branch." },
+                    { q: "Which command fetches changes from `origin` and merges them into the current branch?", opts: ["git pull origin main", "git fetch --merge origin main", "git sync --pull main", "git clone --update main"], ans: 0, tag: "Git Pull", exp: "`git pull origin main` fetches from `origin` and merges into the current branch." },
+                    { q: "Which command uploads local branch commits to `origin` and sets upstream tracking?", opts: ["git push -u origin main", "git upload -u origin main", "git send origin main", "git remote-push origin main"], ans: 0, tag: "Git Push -u", exp: "`git push -u origin main` pushes `main` and configures `origin/main` as its upstream tracking branch." },
+                    { q: "Which command lists configured remote names and their fetch/push URLs?", opts: ["git remote -v", "git remotes --list", "git origin --show", "git config --remotes"], ans: 0, tag: "List Remotes", exp: "`git remote -v` displays remote names and URLs." },
+                    { q: "Which command adds a remote named `upstream`?", opts: ["git remote add upstream <url>", "git remote set upstream <url>", "git add-remote upstream <url>", "git branch --remote upstream <url>"], ans: 0, tag: "Add Remote", exp: "`git remote add <name> <url>` registers a new remote repository." }
+                ],
+                intermediate: [
+                    { q: "Which command fetches from `origin` and rebases your current branch instead of merging?", opts: ["git pull --rebase origin main", "git fetch --rebase-all", "git pull --ff-only-rebase", "git rebase --remote main"], ans: 0, tag: "Pull Rebase", exp: "`git pull --rebase` fetches remote changes and rebases local commits on top." },
+                    { q: "Which command removes stale local `origin/*` refs for branches deleted on the remote?", opts: ["git fetch --prune origin", "git remote clean origin", "git branch --prune origin", "git pull --clean-refs"], ans: 0, tag: "Pruning Stale Refs", exp: "`--prune` deletes local remote-tracking branches that no longer exist on the remote." },
+                    { q: "Which command deletes branch `feature/temp` on the `origin` remote?", opts: ["git push origin --delete feature/temp", "git remote rm feature/temp", "git branch -dr origin/feature/temp", "git fetch --delete feature/temp"], ans: 0, tag: "Delete Remote Branch", exp: "`git push origin --delete <branch>` removes `<branch>` on the remote repository." },
+                    { q: "Which command pushes all local tags to `origin`?", opts: ["git push origin --tags", "git tag --push origin", "git push --all-releases", "git remote push-tags origin"], ans: 0, tag: "Pushing Tags", exp: "`git push origin --tags` transfers local tags to `origin`." },
+                    { q: "Which command updates the URL of existing remote `origin`?", opts: ["git remote set-url origin <new-url>", "git remote change origin <new-url>", "git config --remote-url <new-url>", "git fetch --url <new-url>"], ans: 0, tag: "Update Remote URL", exp: "`git remote set-url origin <url>` changes the repository URL for `origin`." }
+                ],
+                advanced: [
+                    { q: "Why is `git push --force-with-lease` safer than `git push --force`?", opts: ["It refuses to overwrite remote commits if someone else pushed new commits you haven't fetched", "It encrypts the push payload", "It pushes to all remotes automatically", "It skips hooks"], ans: 0, tag: "Force With Lease", exp: "`--force-with-lease` verifies your remote-tracking ref matches the remote before overwriting." },
+                    { q: "What does `git push origin HEAD:refs/for/main` or `HEAD:main` do?", opts: ["Pushes current `HEAD` commit to a specific target ref on `origin`", "Deletes `HEAD` on origin", "Creates a shallow tag", "Resets local `HEAD`"], ans: 0, tag: "Refspec Push", exp: "Git refspecs `<src>:<dst>` map a local ref (`HEAD`) to a remote destination ref." },
+                    { q: "Which command shows detailed info, HEAD branch, and tracking status of `origin`?", opts: ["git remote show origin", "git remote inspect origin", "git status --remote origin", "git log --remote origin"], ans: 0, tag: "Remote Details", exp: "`git remote show origin` queries and displays remote branch tracking info." },
+                    { q: "What does `git push --dry-run` do?", opts: ["Simulates the push and shows what would be sent without updating the remote", "Pushes only empty commits", "Deletes remote tags", "Forces fast-forward"], ans: 0, tag: "Dry-Run Push", exp: "`--dry-run` tests push eligibility and shows ref updates without modifying the remote." },
+                    { q: "How do you clone a repository that contains Git submodules?", opts: ["git clone --recurse-submodules <url>", "git clone --with-subtrees <url>", "git clone --all-modules <url>", "git clone --sync-sub <url>"], ans: 0, tag: "Submodules", exp: "`--recurse-submodules` initializes and clones nested submodules during `git clone`." }
+                ]
+            },
+            staging: {
+                basic: [
+                    { q: "Which command shows unstaged changes in the working directory?", opts: ["git diff", "git diff --staged", "git status --patch", "git log --diff"], ans: 0, tag: "Unstaged Diff", exp: "`git diff` compares the working tree against the staging area (index)." },
+                    { q: "Which command shows changes staged for the next commit?", opts: ["git diff --staged", "git diff --working", "git diff --untracked", "git status --diff"], ans: 0, tag: "Staged Diff", exp: "`git diff --staged` (or `--cached`) compares the index against `HEAD`." },
+                    { q: "Which command temporarily shelves modified/staged changes so you can switch context?", opts: ["git stash", "git shelf", "git park", "git hold"], ans: 0, tag: "Git Stash", exp: "`git stash` saves dirty working/index changes onto the stash stack and cleans the working tree." },
+                    { q: "Which command lists all saved stashes?", opts: ["git stash list", "git stash show-all", "git stashes", "git status --stash"], ans: 0, tag: "Stash List", exp: "`git stash list` prints entries like `stash@{0}`." },
+                    { q: "Which command applies the latest stash and removes it from the stash stack?", opts: ["git stash pop", "git stash apply --delete", "git stash unpop", "git stash drop --apply"], ans: 0, tag: "Stash Pop", exp: "`git stash pop` applies `stash@{0}` and drops it if applied cleanly." }
+                ],
+                intermediate: [
+                    { q: "Which command applies `stash@{1}` while keeping it in the stash list?", opts: ["git stash apply stash@{1}", "git stash pop stash@{1}", "git stash take stash@{1}", "git stash merge stash@{1}"], ans: 0, tag: "Stash Apply", exp: "`git stash apply` applies stash changes without deleting the stash entry." },
+                    { q: "Which command includes untracked files when creating a stash?", opts: ["git stash push -u", "git stash --keep-untracked", "git stash -a-files", "git stash --all-now"], ans: 0, tag: "Stash Untracked", exp: "`git stash push -u` (or `--include-untracked`) stashes untracked files too." },
+                    { q: "Which command lets you interactively choose hunks/lines to stage?", opts: ["git add -p", "git add --interactive-line", "git stage --hunk", "git diff -p --stage"], ans: 0, tag: "Patch Staging", exp: "`git add -p` (`--patch`) steps through diff hunks so you can stage selectively." },
+                    { q: "Which command unstages `config.json` while keeping its working directory edits?", opts: ["git restore --staged config.json", "git rm config.json", "git clean config.json", "git revert config.json"], ans: 0, tag: "Unstage File", exp: "`git restore --staged <file>` (or `git reset HEAD <file>`) removes `<file>` from staging." },
+                    { q: "Which command deletes `stash@{0}` permanently?", opts: ["git stash drop stash@{0}", "git stash clear --one", "git stash rm stash@{0}", "git stash erase 0"], ans: 0, tag: "Drop Stash", exp: "`git stash drop <stash>` removes a specific stash entry." }
+                ],
+                advanced: [
+                    { q: "Which command shows changes between two commits `v1.0` and `v1.1`?", opts: ["git diff v1.0..v1.1", "git diff --between v1.0 v1.1", "git log --diff v1.0 v1.1", "git show-diff v1.0 v1.1"], ans: 0, tag: "Commit Range Diff", exp: "`git diff v1.0..v1.1` compares the tree at `v1.0` with `v1.1`." },
+                    { q: "Which command shows only filenames (and not full diffs) changed in `HEAD~1..HEAD`?", opts: ["git diff --name-only HEAD~1..HEAD", "git diff --files-only", "git log --only-names", "git status --names"], ans: 0, tag: "Diff Names", exp: "`--name-only` outputs just the paths of modified files." },
+                    { q: "How do you create a new branch directly from a stash entry `stash@{0}`?", opts: ["git stash branch hotfix/from-stash stash@{0}", "git switch --stash stash@{0}", "git branch --from-stash 0", "git checkout --stash-branch 0"], ans: 0, tag: "Stash to Branch", exp: "`git stash branch <branch-name> <stash>` creates `<branch-name>`, applies the stash, and drops it." },
+                    { q: "Which command shows the diff of changes stored inside `stash@{0}`?", opts: ["git stash show -p stash@{0}", "git stash diff stash@{0}", "git show --stash stash@{0}", "git diff stash@{0}"], ans: 0, tag: "Inspect Stash Patch", exp: "`git stash show -p` displays the full patch contained in a stash." },
+                    { q: "What does `git diff --stat` display?", opts: ["Summary of modified files and insertion/deletion counts", "Line-by-line blame", "Commit graph ASCII", "Untracked ignore rules"], ans: 0, tag: "Diff Stat", exp: "`--stat` prints a compact histogram of additions and deletions per file." }
+                ]
+            },
+            workflows: {
+                basic: [
+                    { q: "In Gitflow / feature-branch workflows, why do developers open Pull Requests from feature branches?", opts: ["To review code, run CI checks, and merge cleanly into `main` or `develop`", "To bypass branch protection", "To delete `.git` history", "To disable commits"], ans: 0, tag: "Pull Requests", exp: "Pull requests provide peer review and automated CI validation before merging into protected branches." },
+                    { q: "Where are local Git hook scripts stored by default in a repository?", opts: [".git/hooks/", ".git/scripts/", ".github/hooks/", ".git/triggers/"], ans: 0, tag: "Git Hooks", exp: "Client/server hook scripts live in `.git/hooks/` (such as `pre-commit` and `commit-msg`)." },
+                    { q: "Which hook runs on your machine right before `git commit` creates the commit?", opts: ["pre-commit", "post-receive", "pre-push-remote", "on-checkout"], ans: 0, tag: "Pre-Commit Hook", exp: "`pre-commit` executes before a commit is finalized and can abort if checks/linters fail." },
+                    { q: "Which command computes the SHA-1/SHA-256 object hash of a string or file?", opts: ["git hash-object", "git sha-sum", "git digest", "git checksum"], ans: 0, tag: "Plumbing Commands", exp: "`git hash-object` hashes data and optionally writes a blob object into `.git/objects`." },
+                    { q: "What does a `--bare` Git repository (`git init --bare repo.git`) contain?", opts: ["Git database/refs without a working directory—standard for central/remote servers", "Only `.gitignore`", "Only unstaged files", "No commit history"], ans: 0, tag: "Bare Repositories", exp: "Bare repositories store `.git` internals directly without a working tree, ideal for shared remotes." }
+                ],
+                intermediate: [
+                    { q: "What is the main characteristic of Trunk-Based Development?", opts: ["Developers integrate small changes frequently into trunk/main with short-lived branches", "Branches stay open for months without merging", "No automated CI runs", "Merging happens once a year"], ans: 0, tag: "Trunk-Based Dev", exp: "Trunk-based development emphasizes small batches, short-lived branches, and frequent integration
